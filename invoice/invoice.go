@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"gemini-invoice/examples/pdf"
+	"github.com/maaslalani/invoice/pdf"
 )
 
 type Invoice struct {
