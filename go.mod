@@ -5,6 +5,7 @@ go 1.22.2
 require (
 	fyne.io/fyne/v2 v2.5.1
 	github.com/signintech/gopdf v0.27.1
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 replace github.com/maaslalani/invoice => ./external/invoice
