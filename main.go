@@ -76,10 +76,10 @@ func GenerateInvoice(invoice Invoice, output string) error {
 		return err
 	}
 
-	writeLogo(&pdf, invoice.Logo, invoice.From)
-	writeTitle(&pdf, invoice.Title, invoice.Id, invoice.Date)
-	writeBillTo(&pdf, invoice.To)
-	writeHeaderRow(&pdf)
+	WriteLogo(&pdf, invoice.Logo, invoice.From)
+	WriteTitle(&pdf, invoice.Title, invoice.Id, invoice.Date)
+	WriteBillTo(&pdf, invoice.To)
+	WriteHeaderRow(&pdf)
 	subtotal := 0.0
 	for i := range invoice.Items {
 		q := 1
@@ -92,17 +92,17 @@ func GenerateInvoice(invoice Invoice, output string) error {
 			r = invoice.Rates[i]
 		}
 
-		writeRow(&pdf, invoice, invoice.Items[i], q, r)
+		WriteRow(&pdf, invoice, invoice.Items[i], q, r)
 		subtotal += float64(q) * r
 	}
 	if invoice.Note != "" {
-		writeNotes(&pdf, invoice.Note)
+		WriteNotes(&pdf, invoice.Note)
 	}
-	writeTotals(&pdf, invoice, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount)
+	WriteTotals(&pdf, invoice, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount)
 	if invoice.Due != "" {
-		writeDueDate(&pdf, invoice.Due)
+		WriteDueDate(&pdf, invoice.Due)
 	}
-	writeFooter(&pdf, invoice.Id)
+	WriteFooter(&pdf, invoice.Id)
 	output = strings.TrimSuffix(output, ".pdf") + ".pdf"
 	err = pdf.WritePdf(output)
 	if err != nil {

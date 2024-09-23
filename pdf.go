@@ -10,16 +10,6 @@ import (
 	"github.com/signintech/gopdf"
 )
 
-import (
-	"fmt"
-	"image"
-	"os"
-	"strconv"
-	"strings"
-
-	"github.com/signintech/gopdf"
-)
-
 const (
 	quantityColumnOffset = 360
 	rateColumnOffset     = 405
@@ -33,7 +23,7 @@ const (
 	totalLabel    = "Total"
 )
 
-func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
+func WriteLogo(pdf *gopdf.GoPdf, logo string, from string) {
 	if logo != "" {
 		width, height := getImageDimension(logo)
 		scaledWidth := 100.0
@@ -63,7 +53,7 @@ func writeLogo(pdf *gopdf.GoPdf, logo string, from string) {
 	pdf.Br(36)
 }
 
-func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
+func WriteTitle(pdf *gopdf.GoPdf, title, id, date string) {
 	_ = pdf.SetFont("Inter-Bold", "", 24)
 	pdf.SetTextColor(0, 0, 0)
 	_ = pdf.Cell(nil, title)
@@ -79,7 +69,7 @@ func writeTitle(pdf *gopdf.GoPdf, title, id, date string) {
 	pdf.Br(48)
 }
 
-func writeDueDate(pdf *gopdf.GoPdf, due string) {
+func WriteDueDate(pdf *gopdf.GoPdf, due string) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(75, 75, 75)
 	pdf.SetX(rateColumnOffset)
@@ -91,7 +81,7 @@ func writeDueDate(pdf *gopdf.GoPdf, due string) {
 	pdf.Br(12)
 }
 
-func writeBillTo(pdf *gopdf.GoPdf, to string) {
+func WriteBillTo(pdf *gopdf.GoPdf, to string) {
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 9)
 	_ = pdf.Cell(nil, "BILL TO")
@@ -115,7 +105,7 @@ func writeBillTo(pdf *gopdf.GoPdf, to string) {
 	pdf.Br(64)
 }
 
-func writeHeaderRow(pdf *gopdf.GoPdf) {
+func WriteHeaderRow(pdf *gopdf.GoPdf) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(55, 55, 55)
 	_ = pdf.Cell(nil, "ITEM")
@@ -128,7 +118,7 @@ func writeHeaderRow(pdf *gopdf.GoPdf) {
 	pdf.Br(24)
 }
 
-func writeNotes(pdf *gopdf.GoPdf, notes string) {
+func WriteNotes(pdf *gopdf.GoPdf, notes string) {
 	pdf.SetY(600)
 
 	_ = pdf.SetFont("Inter", "", 9)
@@ -148,7 +138,7 @@ func writeNotes(pdf *gopdf.GoPdf, notes string) {
 
 	pdf.Br(48)
 }
-func writeFooter(pdf *gopdf.GoPdf, id string) {
+func WriteFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.SetY(800)
 
 	_ = pdf.SetFont("Inter", "", 10)
@@ -159,7 +149,7 @@ func writeFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.Br(48)
 }
 
-func writeRow(pdf *gopdf.GoPdf, invoice Invoice, item string, quantity int, rate float64) {
+func WriteRow(pdf *gopdf.GoPdf, invoice Invoice, item string, quantity int, rate float64) {
 	_ = pdf.SetFont("Inter", "", 11)
 	pdf.SetTextColor(0, 0, 0)
 
@@ -176,7 +166,7 @@ func writeRow(pdf *gopdf.GoPdf, invoice Invoice, item string, quantity int, rate
 	pdf.Br(24)
 }
 
-func writeTotals(pdf *gopdf.GoPdf, invoice Invoice, subtotal float64, tax float64, discount float64) {
+func WriteTotals(pdf *gopdf.GoPdf, invoice Invoice, subtotal float64, tax float64, discount float64) {
 	pdf.SetY(600)
 
 	writeTotal(pdf, subtotalLabel, subtotal)
@@ -189,7 +179,7 @@ func writeTotals(pdf *gopdf.GoPdf, invoice Invoice, subtotal float64, tax float6
 	writeTotal(pdf, totalLabel, subtotal+tax-discount)
 }
 
-func writeTotal(pdf *gopdf.GoPdf, invoice Invoice, label string, total float64) {
+func WriteTotal(pdf *gopdf.GoPdf, invoice Invoice, label string, total float64) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(75, 75, 75)
 	pdf.SetX(rateColumnOffset)
