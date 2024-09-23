@@ -4,8 +4,14 @@
 mkdir -p dist/invoice-generator-macos/fonts
 mkdir -p dist/invoice-generator-windows/fonts
 
-# Ensure font files exist
-if [ ! -f "Inter/Inter Variable/Inter.ttf" ] || [ ! -f "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" ]; then
+# Create fonts directory in project root
+mkdir -p fonts
+
+# Ensure font files exist and copy them to the fonts directory
+if [ -f "Inter/Inter Variable/Inter.ttf" ] && [ -f "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" ]; then
+    cp "Inter/Inter Variable/Inter.ttf" fonts/Inter.ttf
+    cp "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" fonts/Inter-Bold.ttf
+else
     echo "Error: Font files not found. Please ensure they are in the correct location."
     exit 1
 fi
@@ -18,13 +24,13 @@ CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64
 
 # Copy necessary files for macOS
 cp config.yaml dist/invoice-generator-macos/
-cp "Inter/Inter Variable/Inter.ttf" dist/invoice-generator-macos/fonts/Inter.ttf
-cp "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" dist/invoice-generator-macos/fonts/Inter-Bold.ttf
+cp fonts/Inter.ttf dist/invoice-generator-macos/fonts/
+cp fonts/Inter-Bold.ttf dist/invoice-generator-macos/fonts/
 
 # Copy necessary files for Windows
 cp config.yaml dist/invoice-generator-windows/
-cp "Inter/Inter Variable/Inter.ttf" dist/invoice-generator-windows/fonts/Inter.ttf
-cp "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" dist/invoice-generator-windows/fonts/Inter-Bold.ttf
+cp fonts/Inter.ttf dist/invoice-generator-windows/fonts/
+cp fonts/Inter-Bold.ttf dist/invoice-generator-windows/fonts/
 
 # Create ZIP archives
 cd dist
