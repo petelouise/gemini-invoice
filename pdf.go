@@ -149,7 +149,7 @@ func WriteFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.Br(48)
 }
 
-func WriteRow(pdf *gopdf.GoPdf, invoice Invoice, item string, quantity int, rate float64) {
+func WriteRow(pdf *gopdf.GoPdf, item string, quantity int, rate float64, currency string) {
 	_ = pdf.SetFont("Inter", "", 11)
 	pdf.SetTextColor(0, 0, 0)
 
@@ -160,26 +160,26 @@ func WriteRow(pdf *gopdf.GoPdf, invoice Invoice, item string, quantity int, rate
 	pdf.SetX(quantityColumnOffset)
 	_ = pdf.Cell(nil, strconv.Itoa(quantity))
 	pdf.SetX(rateColumnOffset)
-	_ = pdf.Cell(nil, currencySymbols[invoice.Currency]+strconv.FormatFloat(rate, 'f', 2, 64))
+	_ = pdf.Cell(nil, currencySymbols[currency]+strconv.FormatFloat(rate, 'f', 2, 64))
 	pdf.SetX(amountColumnOffset)
-	_ = pdf.Cell(nil, currencySymbols[invoice.Currency]+amount)
+	_ = pdf.Cell(nil, currencySymbols[currency]+amount)
 	pdf.Br(24)
 }
 
-func WriteTotals(pdf *gopdf.GoPdf, invoice Invoice, subtotal float64, tax float64, discount float64) {
+func WriteTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, discount float64, currency string) {
 	pdf.SetY(600)
 
-	writeTotal(pdf, subtotalLabel, subtotal)
+	WriteTotal(pdf, subtotalLabel, subtotal, currency)
 	if tax > 0 {
-		writeTotal(pdf, taxLabel, tax)
+		WriteTotal(pdf, taxLabel, tax, currency)
 	}
 	if discount > 0 {
-		writeTotal(pdf, discountLabel, discount)
+		WriteTotal(pdf, discountLabel, discount, currency)
 	}
-	writeTotal(pdf, totalLabel, subtotal+tax-discount)
+	WriteTotal(pdf, totalLabel, subtotal+tax-discount, currency)
 }
 
-func WriteTotal(pdf *gopdf.GoPdf, invoice Invoice, label string, total float64) {
+func WriteTotal(pdf *gopdf.GoPdf, label string, total float64, currency string) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(75, 75, 75)
 	pdf.SetX(rateColumnOffset)
@@ -190,7 +190,7 @@ func WriteTotal(pdf *gopdf.GoPdf, invoice Invoice, label string, total float64) 
 	if label == totalLabel {
 		_ = pdf.SetFont("Inter-Bold", "", 11.5)
 	}
-	_ = pdf.Cell(nil, currencySymbols[invoice.Currency]+strconv.FormatFloat(total, 'f', 2, 64))
+	_ = pdf.Cell(nil, currencySymbols[currency]+strconv.FormatFloat(total, 'f', 2, 64))
 	pdf.Br(24)
 }
 

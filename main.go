@@ -81,6 +81,7 @@ func GenerateInvoice(invoice Invoice, output string) error {
 	WriteBillTo(&pdf, invoice.To)
 	WriteHeaderRow(&pdf)
 	subtotal := 0.0
+
 	for i := range invoice.Items {
 		q := 1
 		if len(invoice.Quantities) > i {
@@ -92,13 +93,14 @@ func GenerateInvoice(invoice Invoice, output string) error {
 			r = invoice.Rates[i]
 		}
 
-		WriteRow(&pdf, invoice, invoice.Items[i], q, r)
+		WriteRow(&pdf, invoice.Items[i], q, r, invoice.Currency)
 		subtotal += float64(q) * r
 	}
+
 	if invoice.Note != "" {
 		WriteNotes(&pdf, invoice.Note)
 	}
-	WriteTotals(&pdf, invoice, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount)
+	WriteTotals(&pdf, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount, invoice.Currency)
 	if invoice.Due != "" {
 		WriteDueDate(&pdf, invoice.Due)
 	}
