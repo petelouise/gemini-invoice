@@ -112,7 +112,8 @@ Gemini Invoice is a simple invoice generation application built with Go and Fyne
 
 ### macOS
 
-1. Download the latest release for macOS.
+#### Using Pre-built Application
+1. Download the latest release for macOS from the [Releases](https://github.com/yourusername/gemini-invoice/releases) page.
 2. Unzip the downloaded file.
 3. Drag the "Gemini Invoice.app" to your Applications folder.
 4. Double-click the app to run it.
@@ -122,36 +123,74 @@ If you encounter a security warning when trying to open the app, follow these st
 2. Select "Open" from the context menu.
 3. Click "Open" in the dialog box that appears.
 
-### Windows
-
-1. Download the latest release for Windows.
-2. Unzip the downloaded file to a location of your choice.
-3. Navigate to the extracted "Gemini Invoice Windows" folder.
-4. Double-click the "Gemini Invoice.bat" file to run the application.
-
-## Usage
-
-1. Fill in the invoice details in the application.
-2. Select an output directory.
-3. Click "Generate Invoice" to create a PDF invoice in the selected directory.
-
-## Building from Source
-
-To build the application from source, you'll need Go installed on your system. Then follow these steps:
-
-1. Clone the repository:
+#### Building from Source
+1. Ensure you have Go installed on your system. If not, download and install it from [golang.org](https://golang.org/).
+2. Clone the repository:
    ```
    git clone https://github.com/yourusername/gemini-invoice.git
    cd gemini-invoice
    ```
-
-2. Run the build script:
+3. Run the build script:
    ```
    ./build.sh
    ```
+4. The built application will be available in the `dist` directory as "Gemini Invoice.app".
 
-3. The built applications will be available in the `dist` directory.
+### Windows
+
+#### Using Pre-built Application
+1. Download the latest release for Windows from the [Releases](https://github.com/yourusername/gemini-invoice/releases) page.
+2. Unzip the downloaded file to a location of your choice.
+3. Navigate to the extracted "Gemini Invoice Windows" folder.
+4. Double-click the "Gemini Invoice.bat" file to run the application.
+
+#### Building from Source
+1. Ensure you have Go installed on your system. If not, download and install it from [golang.org](https://golang.org/).
+2. Install MinGW-w64 for CGo support. You can download it from [here](https://sourceforge.net/projects/mingw-w64/).
+3. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/gemini-invoice.git
+   cd gemini-invoice
+   ```
+4. Run the build script:
+   ```
+   ./build.sh
+   ```
+5. The built application will be available in the `dist/Gemini Invoice Windows` directory.
+
+## Usage
+
+1. Launch the Gemini Invoice application.
+2. Fill in the invoice details in the application:
+   - ID: Automatically generated, but can be modified
+   - To: Enter the customer's name or company
+   - Item Name: Enter the name of the product or service
+   - Item Price: Enter the price for the item
+3. Click the "Select Output Directory" button to choose where to save the generated invoice.
+4. Click "Generate Invoice" to create a PDF invoice in the selected directory.
 
 ## Configuration
 
-You can customize some default values by editing the `config.yaml` file before building or running the application.
+You can customize some default values by editing the `config.yaml` file before building or running the application. The config file allows you to set:
+
+- Title: The default title for your invoices
+- From: Your company or personal details
+- Logo: The path to your company logo image
+
+## Development
+
+To contribute to the development of Gemini Invoice:
+
+1. Fork the repository on GitHub.
+2. Clone your forked repository locally.
+3. Make your changes and test them thoroughly.
+4. Push your changes to your fork.
+5. Submit a pull request with a clear description of your changes.
+
+## License
+
+[Specify your license here, e.g., MIT, GPL, etc.]
+
+## Support
+
+For support, please open an issue on the GitHub repository.
