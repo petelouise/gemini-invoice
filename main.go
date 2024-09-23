@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image/color"
 	"io/ioutil"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -13,7 +14,9 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/signintech/gopdf"
@@ -134,7 +137,7 @@ func GenerateInvoice(invoice Invoice, output string) error {
 		WriteDueDate(&pdf, invoice.Due)
 	}
 	WriteFooter(&pdf, invoice.Id)
-	output = strings.TrimSuffix(output, ".pdf") + ".pdf"
+	
 	err = pdf.WritePdf(output)
 	if err != nil {
 		return err
@@ -166,8 +169,9 @@ func main() {
 	itemNameEntry.SetPlaceHolder("Item Name")
 	itemPriceEntry := widget.NewEntry()
 	itemPriceEntry.SetPlaceHolder("Item Price")
-	outputEntry := widget.NewEntry()
-	outputEntry.SetText("invoice.pdf")
+
+	var outputDir string
+	outputDirButton := widget.NewButton("Select Output Directory", nil)
 
 	title := canvas.NewText("Invoice Generator", color.NRGBA{R: 219, G: 112, B: 147, A: 255})
 	title.TextSize = 24
@@ -179,33 +183,52 @@ func main() {
 			{Text: "To", Widget: toEntry},
 			{Text: "Item Name", Widget: itemNameEntry},
 			{Text: "Item Price", Widget: itemPriceEntry},
-			{Text: "Output filename", Widget: outputEntry},
+			{Text: "Output Directory", Widget: outputDirButton},
 		},
 	}
 
-	generateButton := widget.NewButton("Generate Invoice", func() {
+	generateButton := widget.NewButton("Generate Invoice", nil)
+	generateButton.Importance = widget.HighImportance
+
+	outputDirButton.OnTapped = func() {
+		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
+			if err != nil {
+				fmt.Println("Error selecting directory:", err)
+				return
+			}
+			if uri == nil {
+				return
+			}
+			outputDir = uri.Path()
+			outputDirButton.SetText(outputDir)
+		}, myWindow)
+	}
+
+	generateButton.OnTapped = func() {
+		if outputDir == "" {
+			dialog.ShowInformation("Error", "Please select an output directory", myWindow)
+			return
+		}
+
 		inv.Id = idEntry.Text
 		inv.To = toEntry.Text
 		inv.Items = []string{itemNameEntry.Text}
 		price, err := strconv.ParseFloat(itemPriceEntry.Text, 64)
 		if err != nil {
-			fmt.Println("Error parsing price:", err)
+			dialog.ShowError(fmt.Errorf("Error parsing price: %v", err), myWindow)
 			return
 		}
 		inv.Rates = []float64{price}
 		inv.Quantities = []int{1}
-		output := outputEntry.Text
-		if !strings.HasSuffix(output, ".pdf") {
-			output += ".pdf"
-		}
+		
+		output := filepath.Join(outputDir, "invoice.pdf")
 		err = GenerateInvoice(inv, output)
 		if err != nil {
-			fmt.Println("Error generating invoice:", err)
+			dialog.ShowError(fmt.Errorf("Error generating invoice: %v", err), myWindow)
 		} else {
-			fmt.Println("Invoice generated successfully!")
+			dialog.ShowInformation("Success", "Invoice generated successfully!", myWindow)
 		}
-	})
-	generateButton.Importance = widget.HighImportance
+	}
 
 	content := container.NewVBox(
 		title,
