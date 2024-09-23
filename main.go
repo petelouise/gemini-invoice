@@ -9,6 +9,8 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+
+	. "."
 )
 
 //go:embed "Inter/Inter Variable/Inter.ttf"
