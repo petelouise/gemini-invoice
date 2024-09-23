@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	inv "github.com/maaslalani/invoice"
+	pdf "github.com/maaslalani/invoice"
 )
 
 type Invoice struct {
@@ -42,35 +42,35 @@ func DefaultInvoice() Invoice {
 }
 
 func GenerateInvoice(invoice Invoice, output string) error {
-	p := inv.New()
+	p := pdf.New()
 
-	inv.WriteLogo(p, invoice.Logo, invoice.From)
-	inv.WriteTitle(p, invoice.Title, invoice.Id, invoice.Date)
-	inv.WriteBillTo(p, invoice.To)
-	inv.WriteHeaderRow(p)
+	pdf.WriteLogo(p, invoice.Logo, invoice.From)
+	pdf.WriteTitle(p, invoice.Title, invoice.Id, invoice.Date)
+	pdf.WriteBillTo(p, invoice.To)
+	pdf.WriteHeaderRow(p)
 	subtotal := 0.0
-	for i := range inv.Items {
+	for i := range invoice.Items {
 		q := 1
-		if len(inv.Quantities) > i {
-			q = inv.Quantities[i]
+		if len(invoice.Quantities) > i {
+			q = invoice.Quantities[i]
 		}
 
 		r := 0.0
-		if len(inv.Rates) > i {
-			r = inv.Rates[i]
+		if len(invoice.Rates) > i {
+			r = invoice.Rates[i]
 		}
 
-		invoice.WriteRow(p, inv.Items[i], q, r)
+		pdf.WriteRow(p, invoice.Items[i], q, r)
 		subtotal += float64(q) * r
 	}
-	if inv.Note != "" {
-		invoice.WriteNotes(p, inv.Note)
+	if invoice.Note != "" {
+		pdf.WriteNotes(p, invoice.Note)
 	}
-	invoice.WriteTotals(p, subtotal, subtotal*inv.Tax, subtotal*inv.Discount)
-	if inv.Due != "" {
-		invoice.WriteDueDate(p, inv.Due)
+	pdf.WriteTotals(p, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount)
+	if invoice.Due != "" {
+		pdf.WriteDueDate(p, invoice.Due)
 	}
-	invoice.WriteFooter(p, inv.Id)
+	pdf.WriteFooter(p, invoice.Id)
 
 	err := p.WritePdf(output)
 	if err != nil {
