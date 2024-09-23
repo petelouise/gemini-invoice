@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Clean up existing dist directory
+rm -rf dist
+
 # Create distribution directories
 mkdir -p dist/Gemini\ Invoice.app/Contents/MacOS
 mkdir -p dist/Gemini\ Invoice.app/Contents/Resources/fonts
