@@ -3,6 +3,7 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"image/color"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -10,7 +11,10 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/signintech/gopdf"
 	"gopkg.in/yaml.v2"
@@ -149,6 +153,7 @@ func main() {
 	}
 
 	myApp := app.New()
+	myApp.Settings().SetTheme(NewPinkTheme())
 	myWindow := myApp.NewWindow("Invoice Generator")
 
 	inv := DefaultInvoice(config)
@@ -164,43 +169,112 @@ func main() {
 	outputEntry := widget.NewEntry()
 	outputEntry.SetText("invoice.pdf")
 
+	title := canvas.NewText("Invoice Generator", color.NRGBA{R: 219, G: 112, B: 147, A: 255})
+	title.TextSize = 24
+	title.Alignment = fyne.TextAlignCenter
+
+	form := &widget.Form{
+		Items: []*widget.FormItem{
+			{Text: "ID", Widget: idEntry},
+			{Text: "To", Widget: toEntry},
+			{Text: "Item Name", Widget: itemNameEntry},
+			{Text: "Item Price", Widget: itemPriceEntry},
+			{Text: "Output filename", Widget: outputEntry},
+		},
+	}
+
+	generateButton := widget.NewButton("Generate Invoice", func() {
+		inv.Id = idEntry.Text
+		inv.To = toEntry.Text
+		inv.Items = []string{itemNameEntry.Text}
+		price, err := strconv.ParseFloat(itemPriceEntry.Text, 64)
+		if err != nil {
+			fmt.Println("Error parsing price:", err)
+			return
+		}
+		inv.Rates = []float64{price}
+		inv.Quantities = []int{1}
+		output := outputEntry.Text
+		if !strings.HasSuffix(output, ".pdf") {
+			output += ".pdf"
+		}
+		err = GenerateInvoice(inv, output)
+		if err != nil {
+			fmt.Println("Error generating invoice:", err)
+		} else {
+			fmt.Println("Invoice generated successfully!")
+		}
+	})
+	generateButton.Importance = widget.HighImportance
+
 	content := container.NewVBox(
-		widget.NewLabel("Invoice Generator"),
-		widget.NewLabel("ID:"),
-		idEntry,
-		widget.NewLabel("To:"),
-		toEntry,
-		widget.NewLabel("Item Name:"),
-		itemNameEntry,
-		widget.NewLabel("Item Price:"),
-		itemPriceEntry,
-		widget.NewLabel("Output filename:"),
-		outputEntry,
-		widget.NewButton("Generate Invoice", func() {
-			inv.Id = idEntry.Text
-			inv.To = toEntry.Text
-			inv.Items = []string{itemNameEntry.Text}
-			price, err := strconv.ParseFloat(itemPriceEntry.Text, 64)
-			if err != nil {
-				fmt.Println("Error parsing price:", err)
-				return
-			}
-			inv.Rates = []float64{price}
-			inv.Quantities = []int{1}
-			output := outputEntry.Text
-			if !strings.HasSuffix(output, ".pdf") {
-				output += ".pdf"
-			}
-			err = GenerateInvoice(inv, output)
-			if err != nil {
-				fmt.Println("Error generating invoice:", err)
-			} else {
-				fmt.Println("Invoice generated successfully!")
-			}
-		}),
+		title,
+		layout.NewSpacer(),
+		form,
+		layout.NewSpacer(),
+		generateButton,
 	)
 
 	myWindow.SetContent(content)
 	myWindow.Resize(fyne.NewSize(400, 500))
 	myWindow.ShowAndRun()
+}
+type PinkTheme struct{}
+
+var _ fyne.Theme = (*PinkTheme)(nil)
+
+func (m PinkTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
+	switch name {
+	case theme.ColorNameBackground:
+		return color.NRGBA{R: 255, G: 240, B: 245, A: 255} // Light pink background
+	case theme.ColorNameButton:
+		return color.NRGBA{R: 219, G: 112, B: 147, A: 255} // Medium pink for buttons
+	case theme.ColorNameDisabled:
+		return color.NRGBA{R: 200, G: 200, B: 200, A: 255}
+	case theme.ColorNameForeground:
+		return color.NRGBA{R: 139, G: 0, B: 139, A: 255} // Dark pink for text
+	case theme.ColorNameHover:
+		return color.NRGBA{R: 255, G: 182, B: 193, A: 255} // Light pink for hover
+	case theme.ColorNamePlaceHolder:
+		return color.NRGBA{R: 199, G: 21, B: 133, A: 255} // Medium violet red for placeholders
+	case theme.ColorNamePressed:
+		return color.NRGBA{R: 199, G: 21, B: 133, A: 255} // Medium violet red for pressed state
+	case theme.ColorNamePrimary:
+		return color.NRGBA{R: 219, G: 112, B: 147, A: 255} // Medium pink as primary color
+	case theme.ColorNameScrollBar:
+		return color.NRGBA{R: 255, G: 182, B: 193, A: 255} // Light pink for scrollbar
+	default:
+		return theme.DefaultTheme().Color(name, variant)
+	}
+}
+
+func (m PinkTheme) Icon(name fyne.ThemeIconName) fyne.Resource {
+	return theme.DefaultTheme().Icon(name)
+}
+
+func (m PinkTheme) Font(style fyne.TextStyle) fyne.Resource {
+	return theme.DefaultTheme().Font(style)
+}
+
+func (m PinkTheme) Size(name fyne.ThemeSizeName) float32 {
+	switch name {
+	case theme.SizeNamePadding:
+		return 8
+	case theme.SizeNameInlineIcon:
+		return 20
+	case theme.SizeNameScrollBar:
+		return 16
+	case theme.SizeNameScrollBarSmall:
+		return 3
+	case theme.SizeNameText:
+		return 14
+	case theme.SizeNameInputBorder:
+		return 2
+	default:
+		return theme.DefaultTheme().Size(name)
+	}
+}
+
+func NewPinkTheme() fyne.Theme {
+	return &PinkTheme{}
 }
