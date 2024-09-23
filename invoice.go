@@ -62,33 +62,33 @@ func GenerateInvoice(invoice Invoice, output string) error {
 		return err
 	}
 
-	writeLogo(&pdf, file.Logo, file.From)
-	writeTitle(&pdf, file.Title, file.Id, file.Date)
-	writeBillTo(&pdf, file.To)
+	writeLogo(&pdf, invoice.Logo, invoice.From)
+	writeTitle(&pdf, invoice.Title, invoice.Id, invoice.Date)
+	writeBillTo(&pdf, invoice.To)
 	writeHeaderRow(&pdf)
 	subtotal := 0.0
-	for i := range file.Items {
+	for i := range invoice.Items {
 		q := 1
-		if len(file.Quantities) > i {
-			q = file.Quantities[i]
+		if len(invoice.Quantities) > i {
+			q = invoice.Quantities[i]
 		}
 
 		r := 0.0
-		if len(file.Rates) > i {
-			r = file.Rates[i]
+		if len(invoice.Rates) > i {
+			r = invoice.Rates[i]
 		}
 
-		writeRow(&pdf, file.Items[i], q, r)
+		writeRow(&pdf, invoice.Items[i], q, r)
 		subtotal += float64(q) * r
 	}
-	if file.Note != "" {
-		writeNotes(&pdf, file.Note)
+	if invoice.Note != "" {
+		writeNotes(&pdf, invoice.Note)
 	}
-	writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount)
-	if file.Due != "" {
-		writeDueDate(&pdf, file.Due)
+	writeTotals(&pdf, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount)
+	if invoice.Due != "" {
+		writeDueDate(&pdf, invoice.Due)
 	}
-	writeFooter(&pdf, file.Id)
+	writeFooter(&pdf, invoice.Id)
 	output = strings.TrimSuffix(output, ".pdf") + ".pdf"
 	err = pdf.WritePdf(output)
 	if err != nil {
