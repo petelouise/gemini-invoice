@@ -8,12 +8,9 @@ mkdir -p dist/Invoice\ Generator\ Windows/fonts
 # Create fonts directory in project root
 mkdir -p fonts
 
-# Ensure font files exist and move them to the fonts directory
-if [ -f "Inter/Inter Variable/Inter.ttf" ] && [ -f "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" ]; then
-    mv "Inter/Inter Variable/Inter.ttf" fonts/Inter.ttf
-    mv "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" fonts/Inter-Bold.ttf
-else
-    echo "Error: Font files not found. Please ensure they are in the correct location."
+# Ensure font files exist
+if [ ! -f "fonts/Inter.ttf" ] || [ ! -f "fonts/Inter-Bold.ttf" ]; then
+    echo "Error: Font files not found. Please ensure they are in the fonts directory."
     exit 1
 fi
 
@@ -53,13 +50,11 @@ EOL
 
 # Copy necessary files for macOS
 cp config.yaml dist/Invoice\ Generator.app/Contents/Resources/
-cp fonts/Inter.ttf dist/Invoice\ Generator.app/Contents/Resources/fonts/
-cp fonts/Inter-Bold.ttf dist/Invoice\ Generator.app/Contents/Resources/fonts/
+cp fonts/*.ttf dist/Invoice\ Generator.app/Contents/Resources/fonts/
 
 # Copy necessary files for Windows
 cp config.yaml dist/Invoice\ Generator\ Windows/
-cp fonts/Inter.ttf dist/Invoice\ Generator\ Windows/fonts/
-cp fonts/Inter-Bold.ttf dist/Invoice\ Generator\ Windows/fonts/
+cp fonts/*.ttf dist/Invoice\ Generator\ Windows/fonts/
 
 # Create a shortcut for Windows
 echo '@echo off
