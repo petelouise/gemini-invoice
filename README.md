@@ -104,3 +104,54 @@ For Windows applications, you will need a tool like `osslsigncode` and OpenSSL.
 
 -  **macOS**: Use Keychain Access to create a self-signed certificate, then use `codesign` and `spctl` to sign and verify your app.
 -  **Windows**: Use OpenSSL to create a self-signed certificate, convert it to PKCS12 format, and use `osslsigncode` to sign the executable.
+# Gemini Invoice
+
+Gemini Invoice is a simple invoice generation application built with Go and Fyne.
+
+## Installation Instructions
+
+### macOS
+
+1. Download the latest release for macOS.
+2. Unzip the downloaded file.
+3. Drag the "Gemini Invoice.app" to your Applications folder.
+4. Double-click the app to run it.
+
+If you encounter a security warning when trying to open the app, follow these steps:
+1. Right-click (or Control-click) on the app icon.
+2. Select "Open" from the context menu.
+3. Click "Open" in the dialog box that appears.
+
+### Windows
+
+1. Download the latest release for Windows.
+2. Unzip the downloaded file to a location of your choice.
+3. Navigate to the extracted "Gemini Invoice Windows" folder.
+4. Double-click the "Gemini Invoice.bat" file to run the application.
+
+## Usage
+
+1. Fill in the invoice details in the application.
+2. Select an output directory.
+3. Click "Generate Invoice" to create a PDF invoice in the selected directory.
+
+## Building from Source
+
+To build the application from source, you'll need Go installed on your system. Then follow these steps:
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/gemini-invoice.git
+   cd gemini-invoice
+   ```
+
+2. Run the build script:
+   ```
+   ./build.sh
+   ```
+
+3. The built applications will be available in the `dist` directory.
+
+## Configuration
+
+You can customize some default values by editing the `config.yaml` file before building or running the application.

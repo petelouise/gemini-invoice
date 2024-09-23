@@ -97,26 +97,7 @@ log_timestamp "Distribution packages created:"
 echo "- dist/Gemini Invoice.app (macOS)"
 echo "- dist/Gemini Invoice Windows (Windows)"
 
-# Optional: Create DMG for macOS
-if command -v create-dmg &>/dev/null; then
-	log_timestamp "Creating DMG for macOS"
-	create-dmg \
-		--volname "Gemini Invoice" \
-		--volicon "icon.icns" \
-		--window-pos 200 120 \
-		--window-size 600 300 \
-		--icon-size 100 \
-		--icon "Gemini Invoice.app" 175 120 \
-		--hide-extension "Gemini Invoice.app" \
-		--app-drop-link 425 120 \
-		"dist/Gemini Invoice.dmg" \
-		"dist/Gemini Invoice.app"
-	log_timestamp "DMG creation completed"
-	echo "- dist/Gemini Invoice.dmg (macOS installer)"
-else
-	log_timestamp "create-dmg not found. Skipping DMG creation for macOS."
-fi
-
 # Windows distribution is ready in the folder: dist/Gemini Invoice Windows
 log_timestamp "Build script completed"
+echo "Note: For macOS, use the app bundle 'dist/Gemini Invoice.app'."
 echo "Note: For Windows, use the folder 'dist/Gemini Invoice Windows'."
