@@ -119,7 +119,7 @@ func WriteHeaderRow(pdf *gopdf.GoPdf) {
 }
 
 func WriteNotes(pdf *gopdf.GoPdf, notes string) {
-	pdf.SetY(pdf.GetY() + 20) // Add some space before notes
+	pdf.SetY(600)
 
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(55, 55, 55)
@@ -139,8 +139,7 @@ func WriteNotes(pdf *gopdf.GoPdf, notes string) {
 	pdf.Br(48)
 }
 func WriteFooter(pdf *gopdf.GoPdf, id string) {
-	pageHeight := 841.89 // A4 height in points
-	pdf.SetY(pageHeight - 40) // Position footer 40 points from bottom
+	pdf.SetY(800)
 
 	_ = pdf.SetFont("Inter", "", 10)
 	pdf.SetTextColor(55, 55, 55)
@@ -167,7 +166,7 @@ func WriteRow(pdf *gopdf.GoPdf, item string, quantity int, rate float64, currenc
 }
 
 func WriteTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, discount float64, currency string) {
-	pdf.SetY(pdf.GetY() + 20) // Add some space before totals
+	pdf.SetY(600)
 
 	WriteTotal(pdf, subtotalLabel, subtotal, currency)
 	if tax > 0 {
