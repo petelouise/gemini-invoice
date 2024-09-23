@@ -4,11 +4,17 @@
 mkdir -p dist/invoice-generator-macos/fonts
 mkdir -p dist/invoice-generator-windows/fonts
 
+# Ensure font files exist
+if [ ! -f "Inter/Inter Variable/Inter.ttf" ] || [ ! -f "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" ]; then
+    echo "Error: Font files not found. Please ensure they are in the correct location."
+    exit 1
+fi
+
 # Build the application for macOS
-go build -o dist/invoice-generator-macos/invoice-generator
+CGO_ENABLED=1 go build -o dist/invoice-generator-macos/invoice-generator
 
 # Build the application for Windows
-GOOS=windows GOARCH=amd64 go build -o dist/invoice-generator-windows/invoice-generator.exe
+CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ go build -o dist/invoice-generator-windows/invoice-generator.exe
 
 # Copy necessary files for macOS
 cp config.yaml dist/invoice-generator-macos/
