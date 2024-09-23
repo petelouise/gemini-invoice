@@ -87,27 +87,5 @@ else
     echo "Note: create-dmg not found. Skipping DMG creation for macOS."
 fi
 
-# Optional: Create installer for Windows
-if command -v iscc &> /dev/null; then
-    echo "[Setup]
-    AppName=Invoice Generator
-    AppVersion=1.0
-    DefaultDirName={pf}\Invoice Generator
-    DefaultGroupName=Invoice Generator
-    OutputDir=dist
-    OutputBaseFilename=InvoiceGeneratorSetup
-
-    [Files]
-    Source: "dist\Invoice Generator Windows\*"; DestDir: "{app}"; Flags: recursesubdirs
-
-    [Icons]
-    Name: "{group}\Invoice Generator"; Filename: "{app}\invoice-generator.exe"
-    Name: "{commondesktop}\Invoice Generator"; Filename: "{app}\invoice-generator.exe"
-    " > installer.iss
-
-    iscc installer.iss
-    rm installer.iss
-    echo "- dist/InvoiceGeneratorSetup.exe (Windows installer)"
-else
-    echo "Note: Inno Setup Compiler (iscc) not found. Skipping installer creation for Windows."
-fi
+# Windows distribution is ready in the folder: dist/Invoice Generator Windows
+echo "Note: For Windows, use the folder 'dist/Invoice Generator Windows'."
