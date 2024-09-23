@@ -7,10 +7,10 @@ mkdir -p dist/invoice-generator-windows/fonts
 # Create fonts directory in project root
 mkdir -p fonts
 
-# Ensure font files exist and copy them to the fonts directory
+# Ensure font files exist and move them to the fonts directory
 if [ -f "Inter/Inter Variable/Inter.ttf" ] && [ -f "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" ]; then
-    cp "Inter/Inter Variable/Inter.ttf" fonts/Inter.ttf
-    cp "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" fonts/Inter-Bold.ttf
+    mv "Inter/Inter Variable/Inter.ttf" fonts/Inter.ttf
+    mv "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf" fonts/Inter-Bold.ttf
 else
     echo "Error: Font files not found. Please ensure they are in the correct location."
     exit 1
