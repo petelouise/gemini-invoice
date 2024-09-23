@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
-	"invoice/pdf"
+	"github.com/signintech/gopdf"
 )
 
 type Invoice struct {
@@ -41,38 +42,55 @@ func DefaultInvoice() Invoice {
 	}
 }
 
-func GenerateInvoice(invoice Invoice, output string) error {
-	p := pdf.New()
+var file = Invoice{}
 
-	pdf.WriteLogo(p, invoice.Logo, invoice.From)
-	pdf.WriteTitle(p, invoice.Title, invoice.Id, invoice.Date)
-	pdf.WriteBillTo(p, invoice.To)
-	pdf.WriteHeaderRow(p)
+func GenerateInvoice(invoice Invoice, output string) error {
+	pdf := gopdf.GoPdf{}
+
+	pdf.Start(gopdf.Config{
+		PageSize: *gopdf.PageSizeA4,
+	})
+	pdf.SetMargins(40, 40, 40, 40)
+	pdf.AddPage()
+	err := pdf.AddTTFFontData("Inter", interFont)
+	if err != nil {
+		return err
+	}
+
+	err = pdf.AddTTFFontData("Inter-Bold", interBoldFont)
+	if err != nil {
+		return err
+	}
+
+	writeLogo(&pdf, file.Logo, file.From)
+	writeTitle(&pdf, file.Title, file.Id, file.Date)
+	writeBillTo(&pdf, file.To)
+	writeHeaderRow(&pdf)
 	subtotal := 0.0
-	for i := range invoice.Items {
+	for i := range file.Items {
 		q := 1
-		if len(invoice.Quantities) > i {
-			q = invoice.Quantities[i]
+		if len(file.Quantities) > i {
+			q = file.Quantities[i]
 		}
 
 		r := 0.0
-		if len(invoice.Rates) > i {
-			r = invoice.Rates[i]
+		if len(file.Rates) > i {
+			r = file.Rates[i]
 		}
 
-		pdf.WriteRow(p, invoice.Items[i], q, r)
+		writeRow(&pdf, file.Items[i], q, r)
 		subtotal += float64(q) * r
 	}
-	if invoice.Note != "" {
-		pdf.WriteNotes(p, invoice.Note)
+	if file.Note != "" {
+		writeNotes(&pdf, file.Note)
 	}
-	pdf.WriteTotals(p, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount)
-	if invoice.Due != "" {
-		pdf.WriteDueDate(p, invoice.Due)
+	writeTotals(&pdf, subtotal, subtotal*file.Tax, subtotal*file.Discount)
+	if file.Due != "" {
+		writeDueDate(&pdf, file.Due)
 	}
-	pdf.WriteFooter(p, invoice.Id)
-
-	err := p.WritePdf(output)
+	writeFooter(&pdf, file.Id)
+	output = strings.TrimSuffix(output, ".pdf") + ".pdf"
+	err = pdf.WritePdf(output)
 	if err != nil {
 		return err
 	}

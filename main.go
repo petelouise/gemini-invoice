@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"strings"
 
@@ -8,14 +9,19 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"gemini-invoice/invoice"
 )
+
+//go:embed "Inter/Inter Variable/Inter.ttf"
+var interFont []byte
+
+//go:embed "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf"
+var interBoldFont []byte
 
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Invoice Generator")
 
-	inv := invoice.DefaultInvoice()
+	inv := DefaultInvoice()
 
 	idEntry := widget.NewEntry()
 	idEntry.SetText(inv.Id)
@@ -57,7 +63,7 @@ func main() {
 			if !strings.HasSuffix(output, ".pdf") {
 				output += ".pdf"
 			}
-			err := invoice.GenerateInvoice(inv, output)
+			err := GenerateInvoice(inv, output)
 			if err != nil {
 				fmt.Println("Error generating invoice:", err)
 			} else {
