@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/yourusername/yourproject/invoice/pdf"
+	"invoice/pdf"
 )
 
 type Invoice struct {
