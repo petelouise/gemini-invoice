@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"time"
+
+	"github.com/yourusername/yourproject/invoice/pdf"
 )
 
 type Invoice struct {
