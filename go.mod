@@ -4,9 +4,7 @@ go 1.22.2
 
 require (
 	fyne.io/fyne/v2 v2.5.1
-	github.com/signintech/gopdf v0.19.0
-	github.com/spf13/cobra v1.7.0
-	github.com/spf13/viper v1.17.0
+	github.com/maaslalani/invoice v0.1.1-0.20231130132541-0fb2e9d84385
 )
 
 require (
