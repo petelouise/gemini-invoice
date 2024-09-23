@@ -33,8 +33,21 @@ log_timestamp "macOS build completed"
 
 # Build the application for Windows
 log_timestamp "Building for Windows"
-CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ go build -o dist/Gemini\ Invoice\ Windows/gemini-invoice.exe
-log_timestamp "Windows build completed"
+log_timestamp "Setting up Windows build environment"
+export CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++
+
+log_timestamp "Starting Windows build with a 5-minute timeout"
+timeout 300s go build -v -o dist/Gemini\ Invoice\ Windows/gemini-invoice.exe
+
+if [ $? -eq 124 ]; then
+    log_timestamp "Error: Windows build timed out after 5 minutes"
+    exit 1
+elif [ $? -ne 0 ]; then
+    log_timestamp "Error: Windows build failed"
+    exit 1
+else
+    log_timestamp "Windows build completed successfully"
+fi
 
 # Create Info.plist for macOS
 log_timestamp "Creating Info.plist for macOS"
