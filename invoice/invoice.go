@@ -3,8 +3,6 @@ package invoice
 import (
 	"fmt"
 	"time"
-
-	"github.com/maaslalani/invoice"
 )
 
 type Invoice struct {
