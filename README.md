@@ -1,8 +1,15 @@
 ## Build
 
+### Local Build
+
 ```sh
 go build -o gemini-invoice
+```
 
+### Release Build
+
+```sh
+./build.sh
 ```
 
 ## Signing
