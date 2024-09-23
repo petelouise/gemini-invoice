@@ -8,8 +8,6 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-replace github.com/maaslalani/invoice => ./external/invoice
-
 require (
 	fyne.io/systray v1.11.0 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
