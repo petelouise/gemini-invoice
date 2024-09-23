@@ -149,7 +149,7 @@ func writeFooter(pdf *gopdf.GoPdf, id string) {
 	pdf.Br(48)
 }
 
-func writeRow(pdf *gopdf.GoPdf, item string, quantity int, rate float64) {
+func writeRow(pdf *gopdf.GoPdf, invoice Invoice, item string, quantity int, rate float64) {
 	_ = pdf.SetFont("Inter", "", 11)
 	pdf.SetTextColor(0, 0, 0)
 
@@ -160,13 +160,13 @@ func writeRow(pdf *gopdf.GoPdf, item string, quantity int, rate float64) {
 	pdf.SetX(quantityColumnOffset)
 	_ = pdf.Cell(nil, strconv.Itoa(quantity))
 	pdf.SetX(rateColumnOffset)
-	_ = pdf.Cell(nil, currencySymbols[file.Currency]+strconv.FormatFloat(rate, 'f', 2, 64))
+	_ = pdf.Cell(nil, currencySymbols[invoice.Currency]+strconv.FormatFloat(rate, 'f', 2, 64))
 	pdf.SetX(amountColumnOffset)
-	_ = pdf.Cell(nil, currencySymbols[file.Currency]+amount)
+	_ = pdf.Cell(nil, currencySymbols[invoice.Currency]+amount)
 	pdf.Br(24)
 }
 
-func writeTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, discount float64) {
+func writeTotals(pdf *gopdf.GoPdf, invoice Invoice, subtotal float64, tax float64, discount float64) {
 	pdf.SetY(600)
 
 	writeTotal(pdf, subtotalLabel, subtotal)
@@ -179,7 +179,7 @@ func writeTotals(pdf *gopdf.GoPdf, subtotal float64, tax float64, discount float
 	writeTotal(pdf, totalLabel, subtotal+tax-discount)
 }
 
-func writeTotal(pdf *gopdf.GoPdf, label string, total float64) {
+func writeTotal(pdf *gopdf.GoPdf, invoice Invoice, label string, total float64) {
 	_ = pdf.SetFont("Inter", "", 9)
 	pdf.SetTextColor(75, 75, 75)
 	pdf.SetX(rateColumnOffset)
@@ -190,7 +190,7 @@ func writeTotal(pdf *gopdf.GoPdf, label string, total float64) {
 	if label == totalLabel {
 		_ = pdf.SetFont("Inter-Bold", "", 11.5)
 	}
-	_ = pdf.Cell(nil, currencySymbols[file.Currency]+strconv.FormatFloat(total, 'f', 2, 64))
+	_ = pdf.Cell(nil, currencySymbols[invoice.Currency]+strconv.FormatFloat(total, 'f', 2, 64))
 	pdf.Br(24)
 }
 

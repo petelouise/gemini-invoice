@@ -42,7 +42,6 @@ func DefaultInvoice() Invoice {
 	}
 }
 
-var file = Invoice{}
 
 func GenerateInvoice(invoice Invoice, output string) error {
 	pdf := gopdf.GoPdf{}
@@ -78,13 +77,13 @@ func GenerateInvoice(invoice Invoice, output string) error {
 			r = invoice.Rates[i]
 		}
 
-		writeRow(&pdf, invoice.Items[i], q, r)
+		writeRow(&pdf, invoice, invoice.Items[i], q, r)
 		subtotal += float64(q) * r
 	}
 	if invoice.Note != "" {
 		writeNotes(&pdf, invoice.Note)
 	}
-	writeTotals(&pdf, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount)
+	writeTotals(&pdf, invoice, subtotal, subtotal*invoice.Tax, subtotal*invoice.Discount)
 	if invoice.Due != "" {
 		writeDueDate(&pdf, invoice.Due)
 	}
