@@ -13,6 +13,11 @@ import (
 	"github.com/signintech/gopdf"
 )
 
+var currencySymbols = map[string]string{
+	"USD": "$",
+	// Add other currency symbols as needed
+}
+
 //go:embed "Inter/Inter Variable/Inter.ttf"
 var interFont []byte
 

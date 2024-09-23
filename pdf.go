@@ -10,6 +10,16 @@ import (
 	"github.com/signintech/gopdf"
 )
 
+import (
+	"fmt"
+	"image"
+	"os"
+	"strconv"
+	"strings"
+
+	"github.com/signintech/gopdf"
+)
+
 const (
 	quantityColumnOffset = 360
 	rateColumnOffset     = 405
