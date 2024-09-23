@@ -24,7 +24,7 @@ var currencySymbols = map[string]string{
 //go:embed "fonts/Inter.ttf"
 var interFont []byte
 
-//go:embed "fonts/Inter-Bold.ttf"
+//go:embed "fonts/InterBold.ttf"
 var interBoldFont []byte
 
 type Invoice struct {
