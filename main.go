@@ -70,11 +70,11 @@ func DefaultInvoice(config *Config) Invoice {
 		Id:         time.Now().Format("20060102"),
 		Title:      config.Title,
 		Logo:       config.Logo,
-		Rates:      []float64{25},
-		Quantities: []int{2},
-		Items:      []string{"Paper Cranes"},
+		Rates:      []float64{0},
+		Quantities: []int{1},
+		Items:      []string{""},
 		From:       config.From,
-		To:         "Untitled Corporation, Inc.",
+		To:         "",
 		Date:       time.Now().Format("Jan 02, 2006"),
 		Due:        time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"),
 		Tax:        0,
@@ -156,7 +156,7 @@ func main() {
 	idEntry := widget.NewEntry()
 	idEntry.SetText(inv.Id)
 	toEntry := widget.NewEntry()
-	toEntry.SetText(inv.To)
+	toEntry.SetPlaceHolder("Customer Name")
 	itemNameEntry := widget.NewEntry()
 	itemNameEntry.SetPlaceHolder("Item Name")
 	itemPriceEntry := widget.NewEntry()
