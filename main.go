@@ -3,6 +3,7 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"io/ioutil"
 	"strings"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/signintech/gopdf"
+	"gopkg.in/yaml.v2"
 )
 
 var currencySymbols = map[string]string{
@@ -41,14 +43,36 @@ type Invoice struct {
 	Note       string    `json:"note" yaml:"note"`
 }
 
-func DefaultInvoice() Invoice {
+type Config struct {
+	Title string `yaml:"title"`
+	From  string `yaml:"from"`
+	Logo  string `yaml:"logo"`
+}
+
+func LoadConfig(filename string) (*Config, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	var config Config
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &config, nil
+}
+
+func DefaultInvoice(config *Config) Invoice {
 	return Invoice{
 		Id:         time.Now().Format("20060102"),
-		Title:      "INVOICE",
+		Title:      config.Title,
+		Logo:       config.Logo,
 		Rates:      []float64{25},
 		Quantities: []int{2},
 		Items:      []string{"Paper Cranes"},
-		From:       "Project Folded, Inc.",
+		From:       config.From,
 		To:         "Untitled Corporation, Inc.",
 		Date:       time.Now().Format("Jan 02, 2006"),
 		Due:        time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"),
@@ -117,17 +141,19 @@ func GenerateInvoice(invoice Invoice, output string) error {
 }
 
 func main() {
+	config, err := LoadConfig("config.yaml")
+	if err != nil {
+		fmt.Println("Error loading config:", err)
+		return
+	}
+
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Invoice Generator")
 
-	inv := DefaultInvoice()
+	inv := DefaultInvoice(config)
 
 	idEntry := widget.NewEntry()
 	idEntry.SetText(inv.Id)
-	titleEntry := widget.NewEntry()
-	titleEntry.SetText(inv.Title)
-	fromEntry := widget.NewEntry()
-	fromEntry.SetText(inv.From)
 	toEntry := widget.NewEntry()
 	toEntry.SetText(inv.To)
 	itemEntry := widget.NewEntry()
@@ -139,10 +165,6 @@ func main() {
 		widget.NewLabel("Invoice Generator"),
 		widget.NewLabel("ID:"),
 		idEntry,
-		widget.NewLabel("Title:"),
-		titleEntry,
-		widget.NewLabel("From:"),
-		fromEntry,
 		widget.NewLabel("To:"),
 		toEntry,
 		widget.NewLabel("Items (comma-separated):"),
@@ -151,8 +173,6 @@ func main() {
 		outputEntry,
 		widget.NewButton("Generate Invoice", func() {
 			inv.Id = idEntry.Text
-			inv.Title = titleEntry.Text
-			inv.From = fromEntry.Text
 			inv.To = toEntry.Text
 			inv.Items = strings.Split(itemEntry.Text, ",")
 			for i := range inv.Items {
