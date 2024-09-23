@@ -3,6 +3,8 @@ package invoice
 import (
 	"fmt"
 	"time"
+
+	"gemini-invoice/external/invoice/pdf"
 )
 
 type Invoice struct {
