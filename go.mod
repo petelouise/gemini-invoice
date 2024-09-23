@@ -2,7 +2,12 @@ module gemini-invoice
 
 go 1.22.2
 
-require fyne.io/fyne/v2 v2.5.1
+require (
+	fyne.io/fyne/v2 v2.5.1
+	github.com/signintech/gopdf v0.19.0
+	github.com/spf13/cobra v1.7.0
+	github.com/spf13/viper v1.17.0
+)
 
 require (
 	fyne.io/systray v1.11.0 // indirect
@@ -35,13 +40,10 @@ require (
 	github.com/rymdport/portal v0.2.6 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/signintech/gopdf v0.19.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
-	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.17.0 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
