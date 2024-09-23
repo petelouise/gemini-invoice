@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/maaslalani/invoice"
+	inv "github.com/maaslalani/invoice"
 )
 
 type Invoice struct {
@@ -41,13 +41,13 @@ func DefaultInvoice() Invoice {
 	}
 }
 
-func GenerateInvoice(inv Invoice, output string) error {
-	p := invoice.New()
+func GenerateInvoice(invoice Invoice, output string) error {
+	p := inv.New()
 
-	invoice.WriteLogo(p, inv.Logo, inv.From)
-	invoice.WriteTitle(p, inv.Title, inv.Id, inv.Date)
-	invoice.WriteBillTo(p, inv.To)
-	invoice.WriteHeaderRow(p)
+	inv.WriteLogo(p, invoice.Logo, invoice.From)
+	inv.WriteTitle(p, invoice.Title, invoice.Id, invoice.Date)
+	inv.WriteBillTo(p, invoice.To)
+	inv.WriteHeaderRow(p)
 	subtotal := 0.0
 	for i := range inv.Items {
 		q := 1
