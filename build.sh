@@ -36,13 +36,13 @@ log_timestamp "Building for Windows"
 log_timestamp "Setting up Windows build environment"
 export CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++
 
-log_timestamp "Starting Windows build with a 10-minute timeout"
-timeout 600s go build -v -o dist/Gemini\ Invoice\ Windows/gemini-invoice.exe
+log_timestamp "Downloading dependencies"
+go mod download
 
-if [ $? -eq 124 ]; then
-	log_timestamp "Error: Windows build timed out after 10 minutes"
-	exit 1
-elif [ $? -ne 0 ]; then
+log_timestamp "Starting Windows build"
+go build -v -x -o dist/Gemini\ Invoice\ Windows/gemini-invoice.exe
+
+if [ $? -ne 0 ]; then
 	log_timestamp "Error: Windows build failed"
 	exit 1
 else
