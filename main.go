@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
 	"time"
 
@@ -156,8 +157,10 @@ func main() {
 	idEntry.SetText(inv.Id)
 	toEntry := widget.NewEntry()
 	toEntry.SetText(inv.To)
-	itemEntry := widget.NewEntry()
-	itemEntry.SetText(strings.Join(inv.Items, ", "))
+	itemNameEntry := widget.NewEntry()
+	itemNameEntry.SetPlaceHolder("Item Name")
+	itemPriceEntry := widget.NewEntry()
+	itemPriceEntry.SetPlaceHolder("Item Price")
 	outputEntry := widget.NewEntry()
 	outputEntry.SetText("invoice.pdf")
 
@@ -167,22 +170,28 @@ func main() {
 		idEntry,
 		widget.NewLabel("To:"),
 		toEntry,
-		widget.NewLabel("Items (comma-separated):"),
-		itemEntry,
+		widget.NewLabel("Item Name:"),
+		itemNameEntry,
+		widget.NewLabel("Item Price:"),
+		itemPriceEntry,
 		widget.NewLabel("Output filename:"),
 		outputEntry,
 		widget.NewButton("Generate Invoice", func() {
 			inv.Id = idEntry.Text
 			inv.To = toEntry.Text
-			inv.Items = strings.Split(itemEntry.Text, ",")
-			for i := range inv.Items {
-				inv.Items[i] = strings.TrimSpace(inv.Items[i])
+			inv.Items = []string{itemNameEntry.Text}
+			price, err := strconv.ParseFloat(itemPriceEntry.Text, 64)
+			if err != nil {
+				fmt.Println("Error parsing price:", err)
+				return
 			}
+			inv.Rates = []float64{price}
+			inv.Quantities = []int{1}
 			output := outputEntry.Text
 			if !strings.HasSuffix(output, ".pdf") {
 				output += ".pdf"
 			}
-			err := GenerateInvoice(inv, output)
+			err = GenerateInvoice(inv, output)
 			if err != nil {
 				fmt.Println("Error generating invoice:", err)
 			} else {
