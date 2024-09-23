@@ -1,18 +1,11 @@
 package invoice
 
 import (
-	_ "embed"
 	"fmt"
 	"time"
 
-	"github.com/signintech/gopdf"
+	"github.com/maaslalani/invoice/pdf"
 )
-
-//go:embed "Inter/Inter Variable/Inter.ttf"
-var interFont []byte
-
-//go:embed "Inter/Inter Hinted for Windows/Desktop/Inter-Bold.ttf"
-var interBoldFont []byte
 
 type Invoice struct {
 	Id         string    `json:"id" yaml:"id"`
@@ -49,26 +42,12 @@ func DefaultInvoice() Invoice {
 }
 
 func GenerateInvoice(inv Invoice, output string) error {
-	pdf := gopdf.GoPdf{}
-	pdf.Start(gopdf.Config{
-		PageSize: *gopdf.PageSizeA4,
-	})
-	pdf.SetMargins(40, 40, 40, 40)
-	pdf.AddPage()
-	err := pdf.AddTTFFontData("Inter", interFont)
-	if err != nil {
-		return err
-	}
+	p := pdf.New()
 
-	err = pdf.AddTTFFontData("Inter-Bold", interBoldFont)
-	if err != nil {
-		return err
-	}
-
-	writeLogo(&pdf, inv.Logo, inv.From)
-	writeTitle(&pdf, inv.Title, inv.Id, inv.Date)
-	writeBillTo(&pdf, inv.To)
-	writeHeaderRow(&pdf)
+	pdf.WriteLogo(p, inv.Logo, inv.From)
+	pdf.WriteTitle(p, inv.Title, inv.Id, inv.Date)
+	pdf.WriteBillTo(p, inv.To)
+	pdf.WriteHeaderRow(p)
 	subtotal := 0.0
 	for i := range inv.Items {
 		q := 1
@@ -81,19 +60,19 @@ func GenerateInvoice(inv Invoice, output string) error {
 			r = inv.Rates[i]
 		}
 
-		writeRow(&pdf, inv.Items[i], q, r)
+		pdf.WriteRow(p, inv.Items[i], q, r)
 		subtotal += float64(q) * r
 	}
 	if inv.Note != "" {
-		writeNotes(&pdf, inv.Note)
+		pdf.WriteNotes(p, inv.Note)
 	}
-	writeTotals(&pdf, subtotal, subtotal*inv.Tax, subtotal*inv.Discount)
+	pdf.WriteTotals(p, subtotal, subtotal*inv.Tax, subtotal*inv.Discount)
 	if inv.Due != "" {
-		writeDueDate(&pdf, inv.Due)
+		pdf.WriteDueDate(p, inv.Due)
 	}
-	writeFooter(&pdf, inv.Id)
+	pdf.WriteFooter(p, inv.Id)
 
-	err = pdf.WritePdf(output)
+	err := p.WritePdf(output)
 	if err != nil {
 		return err
 	}
@@ -102,8 +81,3 @@ func GenerateInvoice(inv Invoice, output string) error {
 
 	return nil
 }
-
-// Add the following functions from cli_example.go:
-// writeLogo, writeTitle, writeBillTo, writeHeaderRow, writeRow, writeNotes, writeTotals, writeDueDate, writeFooter
-
-// You'll need to copy these functions from cli_example.go and adjust them to work within this package.

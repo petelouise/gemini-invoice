@@ -8,7 +8,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"your-module-name/invoice"
+	"github.com/yourusername/yourprojectname/invoice"
 )
 
 func main() {
