@@ -25,11 +25,19 @@ const (
 
 func WriteLogo(pdf *gopdf.GoPdf, logo string, from string) {
 	if logo != "" {
-		width, height := getImageDimension(logo)
-		scaledWidth := 100.0
-		scaledHeight := float64(height) * scaledWidth / float64(width)
-		_ = pdf.Image(logo, pdf.GetX(), pdf.GetY(), &gopdf.Rect{W: scaledWidth, H: scaledHeight})
-		pdf.Br(scaledHeight + 24)
+		width, height, err := getImageDimension(logo)
+		if err != nil {
+			fmt.Printf("Warning: Unable to get image dimensions for %s: %v\n", logo, err)
+		} else {
+			scaledWidth := 100.0
+			scaledHeight := float64(height) * scaledWidth / float64(width)
+			err = pdf.Image(logo, pdf.GetX(), pdf.GetY(), &gopdf.Rect{W: scaledWidth, H: scaledHeight})
+			if err != nil {
+				fmt.Printf("Warning: Unable to add logo to PDF: %v\n", err)
+			} else {
+				pdf.Br(scaledHeight + 24)
+			}
+		}
 	}
 	pdf.SetTextColor(55, 55, 55)
 
@@ -194,18 +202,18 @@ func WriteTotal(pdf *gopdf.GoPdf, label string, total float64, currency string) 
 	pdf.Br(24)
 }
 
-func getImageDimension(imagePath string) (int, int) {
+func getImageDimension(imagePath string) (int, int, error) {
 	file, err := os.Open(imagePath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return 0, 0, err
 	}
 	defer file.Close()
 
 	image, _, err := image.DecodeConfig(file)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s: %v\n", imagePath, err)
+		return 0, 0, err
 	}
-	return image.Width, image.Height
+	return image.Width, image.Height, nil
 }
 func WritePaymentInstructions(pdf *gopdf.GoPdf, instructions, accountNumber, routingNumber string) {
 	pdf.SetY(pdf.GetY() + 20) // Add some space before payment instructions

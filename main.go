@@ -94,7 +94,15 @@ func LoadConfig(filename string) (*Config, error) {
 			return nil, err
 		}
 		dir := filepath.Dir(execPath)
-		config.Logo = filepath.Join(dir, "..", "Resources", config.Logo)
+		logoPath := filepath.Join(dir, "..", "Resources", config.Logo)
+		
+		// Check if the logo file exists
+		if _, err := os.Stat(logoPath); os.IsNotExist(err) {
+			fmt.Printf("Warning: Logo file not found at %s\n", logoPath)
+			config.Logo = "" // Set to empty string if not found
+		} else {
+			config.Logo = logoPath
+		}
 	}
 
 	return &config, nil
@@ -187,7 +195,7 @@ func main() {
 		return
 	}
 
-	myApp := app.New()
+	myApp := app.NewWithID("com.gemini.invoice")
 	myApp.Settings().SetTheme(NewPinkTheme())
 	myWindow := myApp.NewWindow("Gemini Invoice")
 
