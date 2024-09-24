@@ -95,7 +95,7 @@ func LoadConfig(filename string) (*Config, error) {
 		}
 		dir := filepath.Dir(execPath)
 		resourcesLogoPath := filepath.Join(dir, "..", "Resources", config.Logo)
-		
+
 		// Check if the logo file exists in Resources
 		if _, err := os.Stat(resourcesLogoPath); os.IsNotExist(err) {
 			// If not in Resources, check the root directory
@@ -261,7 +261,7 @@ func main() {
 		inv.Items = []string{itemNameEntry.Text}
 		price, err := strconv.ParseFloat(itemPriceEntry.Text, 64)
 		if err != nil {
-			dialog.ShowError(fmt.Errorf("Error parsing price: %v", err), myWindow)
+			dialog.ShowError(fmt.Errorf("error parsing price: %v", err), myWindow)
 			return
 		}
 		inv.Rates = []float64{price}
@@ -270,7 +270,7 @@ func main() {
 		output := filepath.Join(outputDir, "invoice.pdf")
 		err = GenerateInvoice(inv, output)
 		if err != nil {
-			dialog.ShowError(fmt.Errorf("Error generating invoice: %v", err), myWindow)
+			dialog.ShowError(fmt.Errorf("error generating invoice: %v", err), myWindow)
 		} else {
 			dialog.ShowInformation("Success", "Invoice generated successfully!", myWindow)
 		}
