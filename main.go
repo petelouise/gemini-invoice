@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image/color"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
