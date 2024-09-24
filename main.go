@@ -94,14 +94,20 @@ func LoadConfig(filename string) (*Config, error) {
 			return nil, err
 		}
 		dir := filepath.Dir(execPath)
-		logoPath := filepath.Join(dir, "..", "Resources", config.Logo)
+		resourcesLogoPath := filepath.Join(dir, "..", "Resources", config.Logo)
 		
-		// Check if the logo file exists
-		if _, err := os.Stat(logoPath); os.IsNotExist(err) {
-			fmt.Printf("Warning: Logo file not found at %s\n", logoPath)
-			config.Logo = "" // Set to empty string if not found
+		// Check if the logo file exists in Resources
+		if _, err := os.Stat(resourcesLogoPath); os.IsNotExist(err) {
+			// If not in Resources, check the root directory
+			rootLogoPath := filepath.Join(dir, "..", config.Logo)
+			if _, err := os.Stat(rootLogoPath); os.IsNotExist(err) {
+				fmt.Printf("Warning: Logo file not found at %s or %s\n", resourcesLogoPath, rootLogoPath)
+				config.Logo = "" // Set to empty string if not found
+			} else {
+				config.Logo = rootLogoPath
+			}
 		} else {
-			config.Logo = logoPath
+			config.Logo = resourcesLogoPath
 		}
 	}
 
