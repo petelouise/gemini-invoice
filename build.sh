@@ -28,7 +28,8 @@ fi
 
 # Build the application for macOS
 log_timestamp "Building for macOS"
-CGO_ENABLED=1 go build -o dist/Gemini\ Invoice.app/Contents/MacOS/gemini-invoice
+CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o dist/Gemini\ Invoice.app/Contents/MacOS/gemini-invoice
+chmod +x dist/Gemini\ Invoice.app/Contents/MacOS/gemini-invoice
 log_timestamp "macOS build completed"
 
 # Build the application for Windows
@@ -74,6 +75,12 @@ cat >dist/Gemini\ Invoice.app/Contents/Info.plist <<EOL
     <string>10.12</string>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
 </dict>
 </plist>
 EOL
