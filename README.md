@@ -194,3 +194,19 @@ To contribute to the development of Gemini Invoice:
 ## Support
 
 For support, please open an issue on the GitHub repository.
+
+## Installing and Running the Compiled Application
+
+### macOS
+1. Download the "Gemini Invoice.app.zip" file.
+2. Unzip the file.
+3. Drag "Gemini Invoice.app" to your Applications folder or run it from its current location.
+4. If you see a security warning, right-click the app, select "Open", and then click "Open" in the dialog.
+
+### Windows
+1. Download the "Gemini Invoice Windows.zip" file.
+2. Unzip the file to a location of your choice.
+3. Navigate to the extracted folder.
+4. Double-click "Gemini Invoice.bat" to run the application.
+
+Note: The application includes all necessary files and dependencies. No additional installation steps are required.
