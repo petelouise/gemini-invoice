@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -16,7 +15,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
-	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/signintech/gopdf"
@@ -137,7 +135,7 @@ func GenerateInvoice(invoice Invoice, output string) error {
 		WriteDueDate(&pdf, invoice.Due)
 	}
 	WriteFooter(&pdf, invoice.Id)
-	
+
 	err = pdf.WritePdf(output)
 	if err != nil {
 		return err
@@ -157,7 +155,7 @@ func main() {
 
 	myApp := app.New()
 	myApp.Settings().SetTheme(NewPinkTheme())
-	myWindow := myApp.NewWindow("Invoice Generator")
+	myWindow := myApp.NewWindow("Gemini Invoice")
 
 	inv := DefaultInvoice(config)
 
@@ -173,7 +171,7 @@ func main() {
 	var outputDir string
 	outputDirButton := widget.NewButton("Select Output Directory", nil)
 
-	title := canvas.NewText("Invoice Generator", color.NRGBA{R: 219, G: 112, B: 147, A: 255})
+	title := canvas.NewText("Gemini Invoice", color.NRGBA{R: 219, G: 112, B: 147, A: 255})
 	title.TextSize = 24
 	title.Alignment = fyne.TextAlignCenter
 
@@ -220,7 +218,7 @@ func main() {
 		}
 		inv.Rates = []float64{price}
 		inv.Quantities = []int{1}
-		
+
 		output := filepath.Join(outputDir, "invoice.pdf")
 		err = GenerateInvoice(inv, output)
 		if err != nil {
@@ -242,6 +240,7 @@ func main() {
 	myWindow.Resize(fyne.NewSize(400, 500))
 	myWindow.ShowAndRun()
 }
+
 type PinkTheme struct{}
 
 var _ fyne.Theme = (*PinkTheme)(nil)
