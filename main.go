@@ -34,26 +34,32 @@ var interFont []byte
 var interBoldFont []byte
 
 type Invoice struct {
-	Id         string    `json:"id" yaml:"id"`
-	Title      string    `json:"title" yaml:"title"`
-	Logo       string    `json:"logo" yaml:"logo"`
-	From       string    `json:"from" yaml:"from"`
-	To         string    `json:"to" yaml:"to"`
-	Date       string    `json:"date" yaml:"date"`
-	Due        string    `json:"due" yaml:"due"`
-	Items      []string  `json:"items" yaml:"items"`
-	Quantities []int     `json:"quantities" yaml:"quantities"`
-	Rates      []float64 `json:"rates" yaml:"rates"`
-	Tax        float64   `json:"tax" yaml:"tax"`
-	Discount   float64   `json:"discount" yaml:"discount"`
-	Currency   string    `json:"currency" yaml:"currency"`
-	Note       string    `json:"note" yaml:"note"`
+	Id                  string    `json:"id" yaml:"id"`
+	Title               string    `json:"title" yaml:"title"`
+	Logo                string    `json:"logo" yaml:"logo"`
+	From                string    `json:"from" yaml:"from"`
+	To                  string    `json:"to" yaml:"to"`
+	Date                string    `json:"date" yaml:"date"`
+	Due                 string    `json:"due" yaml:"due"`
+	Items               []string  `json:"items" yaml:"items"`
+	Quantities          []int     `json:"quantities" yaml:"quantities"`
+	Rates               []float64 `json:"rates" yaml:"rates"`
+	Tax                 float64   `json:"tax" yaml:"tax"`
+	Discount            float64   `json:"discount" yaml:"discount"`
+	Currency            string    `json:"currency" yaml:"currency"`
+	Note                string    `json:"note" yaml:"note"`
+	AccountNumber       string    `json:"account_number" yaml:"account_number"`
+	RoutingNumber       string    `json:"routing_number" yaml:"routing_number"`
+	PaymentInstructions string    `json:"payment_instructions" yaml:"payment_instructions"`
 }
 
 type Config struct {
-	Title string `yaml:"title"`
-	From  string `yaml:"from"`
-	Logo  string `yaml:"logo"`
+	Title               string `yaml:"title"`
+	From                string `yaml:"from"`
+	Logo                string `yaml:"logo"`
+	AccountNumber       string `yaml:"account_number"`
+	RoutingNumber       string `yaml:"routing_number"`
+	PaymentInstructions string `yaml:"payment_instructions"`
 }
 
 func LoadConfig(filename string) (*Config, error) {
@@ -96,19 +102,22 @@ func LoadConfig(filename string) (*Config, error) {
 
 func DefaultInvoice(config *Config) Invoice {
 	return Invoice{
-		Id:         time.Now().Format("20060102"),
-		Title:      config.Title,
-		Logo:       config.Logo,
-		Rates:      []float64{0},
-		Quantities: []int{1},
-		Items:      []string{""},
-		From:       config.From,
-		To:         "",
-		Date:       time.Now().Format("Jan 02, 2006"),
-		Due:        time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"),
-		Tax:        0,
-		Discount:   0,
-		Currency:   "USD",
+		Id:                  time.Now().Format("20060102"),
+		Title:               config.Title,
+		Logo:                config.Logo,
+		Rates:               []float64{0},
+		Quantities:          []int{1},
+		Items:               []string{""},
+		From:                config.From,
+		To:                  "",
+		Date:                time.Now().Format("Jan 02, 2006"),
+		Due:                 time.Now().AddDate(0, 0, 14).Format("Jan 02, 2006"),
+		Tax:                 0,
+		Discount:            0,
+		Currency:            "USD",
+		AccountNumber:       config.AccountNumber,
+		RoutingNumber:       config.RoutingNumber,
+		PaymentInstructions: config.PaymentInstructions,
 	}
 }
 
@@ -158,6 +167,7 @@ func GenerateInvoice(invoice Invoice, output string) error {
 	if invoice.Due != "" {
 		WriteDueDate(&pdf, invoice.Due)
 	}
+	WritePaymentInstructions(&pdf, invoice.PaymentInstructions, invoice.AccountNumber, invoice.RoutingNumber)
 	WriteFooter(&pdf, invoice.Id)
 
 	err = pdf.WritePdf(output)

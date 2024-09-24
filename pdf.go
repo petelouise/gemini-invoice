@@ -207,3 +207,21 @@ func getImageDimension(imagePath string) (int, int) {
 	}
 	return image.Width, image.Height
 }
+func WritePaymentInstructions(pdf *gopdf.GoPdf, instructions, accountNumber, routingNumber string) {
+	pdf.SetY(pdf.GetY() + 20) // Add some space before payment instructions
+
+	_ = pdf.SetFont("Inter", "", 9)
+	pdf.SetTextColor(55, 55, 55)
+	_ = pdf.Cell(nil, "PAYMENT INSTRUCTIONS")
+	pdf.Br(18)
+	_ = pdf.SetFont("Inter", "", 9)
+	pdf.SetTextColor(0, 0, 0)
+
+	_ = pdf.Cell(nil, instructions)
+	pdf.Br(15)
+	_ = pdf.Cell(nil, "Account Number: "+accountNumber)
+	pdf.Br(15)
+	_ = pdf.Cell(nil, "Routing Number: "+routingNumber)
+
+	pdf.Br(48)
+}
