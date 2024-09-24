@@ -30,6 +30,10 @@ fi
 log_timestamp "Building for macOS"
 CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -o dist/Gemini\ Invoice.app/Contents/MacOS/gemini-invoice
 chmod +x dist/Gemini\ Invoice.app/Contents/MacOS/gemini-invoice
+# Copy config.yaml to the Resources directory
+cp config.yaml dist/Gemini\ Invoice.app/Contents/Resources/
+# Copy the logo file to the Resources directory
+cp gemini-invoice-picture-01.png dist/Gemini\ Invoice.app/Contents/Resources/
 log_timestamp "macOS build completed"
 
 # Build the application for Windows
@@ -89,6 +93,7 @@ EOL
 log_timestamp "Copying files for macOS"
 cp config.yaml dist/Gemini\ Invoice.app/Contents/Resources/
 cp fonts/*.ttf dist/Gemini\ Invoice.app/Contents/Resources/fonts/
+cp gemini-invoice-picture-01.png dist/Gemini\ Invoice.app/Contents/Resources/
 
 # Copy necessary files for Windows
 log_timestamp "Copying files for Windows"

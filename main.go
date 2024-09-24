@@ -56,7 +56,20 @@ type Config struct {
 }
 
 func LoadConfig(filename string) (*Config, error) {
-	data, err := ioutil.ReadFile(filename)
+	var configPath string
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		// If the file doesn't exist in the current directory, try the Resources directory
+		execPath, err := os.Executable()
+		if err != nil {
+			return nil, err
+		}
+		dir := filepath.Dir(execPath)
+		configPath = filepath.Join(dir, "..", "Resources", filename)
+	} else {
+		configPath = filename
+	}
+
+	data, err := ioutil.ReadFile(configPath)
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +78,16 @@ func LoadConfig(filename string) (*Config, error) {
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
 		return nil, err
+	}
+
+	// Update the logo path to use the Resources directory if it's not an absolute path
+	if !filepath.IsAbs(config.Logo) {
+		execPath, err := os.Executable()
+		if err != nil {
+			return nil, err
+		}
+		dir := filepath.Dir(execPath)
+		config.Logo = filepath.Join(dir, "..", "Resources", config.Logo)
 	}
 
 	return &config, nil
