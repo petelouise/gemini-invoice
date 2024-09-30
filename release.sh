@@ -11,25 +11,16 @@ fi
 
 VERSION=$1
 
-# Build the project
-echo "Building the project..."
-go build -o gemini-invoice main.go pdf.go
-
-# Create a dist directory if it doesn't exist
-mkdir -p dist
-
-# Move the built binary to the dist directory
-mv gemini-invoice dist/
-
-# Commit changes
-git add .
-git commit -m "Build for release $VERSION"
+# Check if the dist directory exists and contains files
+if [ ! -d "dist" ] || [ -z "$(ls -A dist)" ]; then
+    echo "Error: The dist directory is missing or empty. Please build the project before running this script."
+    exit 1
+fi
 
 # Create a new tag
 git tag -a $VERSION -m "Release $VERSION"
 
-# Push changes and tags to remote repository
-git push origin main
+# Push the tag to the remote repository
 git push origin $VERSION
 
 # Create a GitHub release using the GitHub CLI
