@@ -101,38 +101,6 @@ func LoadConfig(filename string) (*Config, error) {
 	}
 
 	return nil, fmt.Errorf("unable to find or parse %s in any of the searched locations", filename)
-
-	var config Config
-	err = yaml.Unmarshal(data, &config)
-	if err != nil {
-		return nil, err
-	}
-
-	// Update the logo path to use the Resources directory if it's not an absolute path
-	if !filepath.IsAbs(config.Logo) {
-		execPath, err := os.Executable()
-		if err != nil {
-			return nil, err
-		}
-		dir := filepath.Dir(execPath)
-		resourcesLogoPath := filepath.Join(dir, "..", "Resources", config.Logo)
-
-		// Check if the logo file exists in Resources
-		if _, err := os.Stat(resourcesLogoPath); os.IsNotExist(err) {
-			// If not in Resources, check the root directory
-			rootLogoPath := filepath.Join(dir, "..", config.Logo)
-			if _, err := os.Stat(rootLogoPath); os.IsNotExist(err) {
-				fmt.Printf("Warning: Logo file not found at %s or %s\n", resourcesLogoPath, rootLogoPath)
-				config.Logo = "" // Set to empty string if not found
-			} else {
-				config.Logo = rootLogoPath
-			}
-		} else {
-			config.Logo = resourcesLogoPath
-		}
-	}
-
-	return &config, nil
 }
 
 func DefaultInvoice(config *Config) Invoice {
