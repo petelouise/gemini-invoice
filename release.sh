@@ -25,6 +25,17 @@ git push origin $VERSION
 
 # Create a GitHub release using the GitHub CLI
 # Make sure you have the GitHub CLI installed and authenticated
-gh release create $VERSION ./dist/* --title "Release $VERSION" --notes "Release notes for $VERSION"
+gh release create $VERSION --title "Release $VERSION" --notes "Release notes for $VERSION"
+
+# Upload assets separately
+for file in ./dist/*; do
+    if [ -f "$file" ]; then
+        gh release upload $VERSION "$file"
+    elif [ -d "$file" ]; then
+        zip -r "${file}.zip" "$file"
+        gh release upload $VERSION "${file}.zip"
+        rm "${file}.zip"
+    fi
+done
 
 echo "Release $VERSION created and published successfully!"
