@@ -24,23 +24,10 @@ const (
 )
 
 func WriteLogo(pdf *gopdf.GoPdf, logo string, from string) {
-	if logo != "" {
-		width, height, err := getImageDimension(logo)
-		if err != nil {
-			fmt.Printf("Warning: Unable to get image dimensions for %s: %v\n", logo, err)
-		} else {
-			scaledWidth := 100.0
-			scaledHeight := float64(height) * scaledWidth / float64(width)
-			err = pdf.Image(logo, pdf.GetX(), pdf.GetY(), &gopdf.Rect{W: scaledWidth, H: scaledHeight})
-			if err != nil {
-				fmt.Printf("Warning: Unable to add logo to PDF: %v\n", err)
-			} else {
-				pdf.Br(scaledHeight + 24)
-			}
-		}
-	}
+	startY := pdf.GetY()
+	
+	// Write 'from' information first
 	pdf.SetTextColor(55, 55, 55)
-
 	formattedFrom := strings.ReplaceAll(from, `\n`, "\n")
 	fromLines := strings.Split(formattedFrom, "\n")
 
@@ -55,6 +42,24 @@ func WriteLogo(pdf *gopdf.GoPdf, logo string, from string) {
 			pdf.Br(15)
 		}
 	}
+
+	// Add logo to the right side
+	if logo != "" {
+		width, height, err := getImageDimension(logo)
+		if err != nil {
+			fmt.Printf("Warning: Unable to get image dimensions for %s: %v\n", logo, err)
+		} else {
+			scaledWidth := 100.0
+			scaledHeight := float64(height) * scaledWidth / float64(width)
+			pageWidth, _ := pdf.GetPageSize()
+			logoX := pageWidth - scaledWidth - 40 // 40 is right margin
+			err = pdf.Image(logo, logoX, startY, &gopdf.GoPdf.Rect{W: scaledWidth, H: scaledHeight})
+			if err != nil {
+				fmt.Printf("Warning: Unable to add logo to PDF: %v\n", err)
+			}
+		}
+	}
+
 	pdf.Br(21)
 	pdf.SetStrokeColor(225, 225, 225)
 	pdf.Line(pdf.GetX(), pdf.GetY(), 260, pdf.GetY())
