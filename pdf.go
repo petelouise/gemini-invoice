@@ -53,7 +53,7 @@ func WriteLogo(pdf *gopdf.GoPdf, logo string, from string) {
 			scaledHeight := float64(height) * scaledWidth / float64(width)
 			pageWidth, _ := pdf.GetPageSize()
 			logoX := pageWidth - scaledWidth - 40 // 40 is right margin
-			err = pdf.Image(logo, logoX, startY, &gopdf.GoPdf.Rect{W: scaledWidth, H: scaledHeight})
+			err = pdf.Image(logo, logoX, startY, &gopdf.Rect{W: scaledWidth, H: scaledHeight})
 			if err != nil {
 				fmt.Printf("Warning: Unable to add logo to PDF: %v\n", err)
 			}
