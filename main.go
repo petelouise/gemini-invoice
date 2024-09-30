@@ -288,11 +288,8 @@ func main() {
 					quantityEntry,
 					priceEntry,
 				),
+				removeButton,
 			)
-
-			if i > 0 {
-				itemContainer.Add(removeButton)
-			}
 
 			itemsContainer.Add(itemContainer)
 		}
