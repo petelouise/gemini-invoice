@@ -1,5 +1,14 @@
 ## Build
 
+### Run Dev
+
+-  ensure config.yaml exists
+-  ensure logo image exists
+
+```sh
+go run main.go pdf.go
+```
+
 ### Local Build
 
 ```sh
