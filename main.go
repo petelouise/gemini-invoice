@@ -252,7 +252,8 @@ func main() {
 	
 	itemsContainer := container.NewVBox()
 
-	updateItemsContainer := func() {
+	var updateItemsContainer func()
+	updateItemsContainer = func() {
 		itemsContainer.Objects = nil
 		for i := range items {
 			index := i // Capture the index in a local variable
