@@ -245,10 +245,6 @@ func main() {
 			outputDirButton.SetText(outputDir)
 			myApp.Preferences().SetString("lastOutputDir", outputDir)
 		}, myWindow)
-		if lastDir != "" {
-			listURI, _ := storage.ListerForURI(storage.NewFileURI(lastDir))
-			myWindow.FileDialog().SetLocation(listURI)
-		}
 	}
 
 	generateButton.OnTapped = func() {
