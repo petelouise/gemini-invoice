@@ -63,23 +63,44 @@ type Config struct {
 }
 
 func LoadConfig(filename string) (*Config, error) {
-	var configPath string
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		// If the file doesn't exist in the current directory, try the Resources directory
-		execPath, err := os.Executable()
-		if err != nil {
-			return nil, err
+	// Try to load from current directory first
+	if data, err := ioutil.ReadFile(filename); err == nil {
+		var config Config
+		if err := yaml.Unmarshal(data, &config); err == nil {
+			return &config, nil
 		}
-		dir := filepath.Dir(execPath)
-		configPath = filepath.Join(dir, "..", "Resources", filename)
-	} else {
-		configPath = filename
 	}
 
-	data, err := ioutil.ReadFile(configPath)
-	if err != nil {
-		return nil, err
+	// If not found in current directory, try other locations
+	locations := []string{
+		filename,
+		filepath.Join(".", filename),
+		filepath.Join("..", filename),
+		filepath.Join("..", "Resources", filename),
 	}
+
+	execPath, err := os.Executable()
+	if err == nil {
+		dir := filepath.Dir(execPath)
+		locations = append(locations,
+			filepath.Join(dir, filename),
+			filepath.Join(dir, "..", filename),
+			filepath.Join(dir, "..", "Resources", filename),
+		)
+	}
+
+	for _, path := range locations {
+		data, err := ioutil.ReadFile(path)
+		if err == nil {
+			var config Config
+			if err := yaml.Unmarshal(data, &config); err == nil {
+				fmt.Printf("Loaded config from: %s\n", path)
+				return &config, nil
+			}
+		}
+	}
+
+	return nil, fmt.Errorf("unable to find or parse %s in any of the searched locations", filename)
 
 	var config Config
 	err = yaml.Unmarshal(data, &config)
@@ -197,7 +218,8 @@ func GenerateInvoice(invoice Invoice, output string) error {
 func main() {
 	config, err := LoadConfig("config.yaml")
 	if err != nil {
-		fmt.Println("Error loading config:", err)
+		fmt.Printf("Error loading config: %v\n", err)
+		fmt.Println("Current working directory:", getCurrentDirectory())
 		return
 	}
 
@@ -347,4 +369,12 @@ func (m PinkTheme) Size(name fyne.ThemeSizeName) float32 {
 
 func NewPinkTheme() fyne.Theme {
 	return &PinkTheme{}
+}
+
+func getCurrentDirectory() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "Unable to get current directory"
+	}
+	return dir
 }
