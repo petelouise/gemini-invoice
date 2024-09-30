@@ -16,6 +16,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/signintech/gopdf"
@@ -231,6 +232,7 @@ func main() {
 	generateButton.Importance = widget.HighImportance
 
 	outputDirButton.OnTapped = func() {
+		lastDir := myApp.Preferences().StringWithFallback("lastOutputDir", "")
 		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
 			if err != nil {
 				fmt.Println("Error selecting directory:", err)
@@ -241,7 +243,12 @@ func main() {
 			}
 			outputDir = uri.Path()
 			outputDirButton.SetText(outputDir)
+			myApp.Preferences().SetString("lastOutputDir", outputDir)
 		}, myWindow)
+		if lastDir != "" {
+			listURI, _ := storage.ListerForURI(storage.NewFileURI(lastDir))
+			myWindow.FileDialog().SetLocation(listURI)
+		}
 	}
 
 	generateButton.OnTapped = func() {
@@ -262,12 +269,27 @@ func main() {
 		inv.Rates = []float64{price}
 		inv.Quantities = []int{1}
 
-		output := filepath.Join(outputDir, "invoice.pdf")
+		baseFilename := "invoice"
+		extension := ".pdf"
+		counter := 1
+		var output string
+		for {
+			if counter == 1 {
+				output = filepath.Join(outputDir, baseFilename+extension)
+			} else {
+				output = filepath.Join(outputDir, fmt.Sprintf("%s_%d%s", baseFilename, counter, extension))
+			}
+			if _, err := os.Stat(output); os.IsNotExist(err) {
+				break
+			}
+			counter++
+		}
+
 		err = GenerateInvoice(inv, output)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("error generating invoice: %v", err), myWindow)
 		} else {
-			dialog.ShowInformation("Success", "Invoice generated successfully!", myWindow)
+			dialog.ShowInformation("Success", fmt.Sprintf("Invoice generated successfully: %s", output), myWindow)
 		}
 	}
 
