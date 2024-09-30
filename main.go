@@ -248,52 +248,61 @@ func main() {
 	toAddressEntry := widget.NewMultiLineEntry()
 	toAddressEntry.SetPlaceHolder("Customer Address")
 
-	var items []Item
-	var itemList *widget.List
-	itemList = widget.NewList(
-		func() int {
-			return len(items)
-		},
-		func() fyne.CanvasObject {
-			return container.NewHBox(
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewEntry(),
-				widget.NewButton("Remove", nil),
-			)
-		},
-		func(id widget.ListItemID, obj fyne.CanvasObject) {
-			item := items[id]
-			nameEntry := obj.(*fyne.Container).Objects[0].(*widget.Entry)
-			quantityEntry := obj.(*fyne.Container).Objects[1].(*widget.Entry)
-			priceEntry := obj.(*fyne.Container).Objects[2].(*widget.Entry)
-			removeButton := obj.(*fyne.Container).Objects[3].(*widget.Button)
+	items := []Item{{Name: "", Quantity: 1, Price: 0.0}}
+	
+	itemsContainer := container.NewVBox()
 
-			nameEntry.SetText(item.Name)
-			quantityEntry.SetText(strconv.Itoa(item.Quantity))
-			priceEntry.SetText(fmt.Sprintf("%.2f", item.Price))
-
+	updateItemsContainer := func() {
+		itemsContainer.Objects = nil
+		for i := range items {
+			index := i // Capture the index in a local variable
+			nameEntry := widget.NewEntry()
+			nameEntry.SetText(items[i].Name)
 			nameEntry.OnChanged = func(value string) {
-				items[id].Name = value
+				items[index].Name = value
 			}
+
+			quantityEntry := widget.NewEntry()
+			quantityEntry.SetText(strconv.Itoa(items[i].Quantity))
 			quantityEntry.OnChanged = func(value string) {
 				quantity, _ := strconv.Atoi(value)
-				items[id].Quantity = quantity
+				items[index].Quantity = quantity
 			}
+
+			priceEntry := widget.NewEntry()
+			priceEntry.SetText(fmt.Sprintf("%.2f", items[i].Price))
 			priceEntry.OnChanged = func(value string) {
 				price, _ := strconv.ParseFloat(value, 64)
-				items[id].Price = price
+				items[index].Price = price
 			}
-			removeButton.OnTapped = func() {
-				items = append(items[:id], items[id+1:]...)
-				itemList.Refresh()
+
+			removeButton := widget.NewButton("Remove", func() {
+				items = append(items[:index], items[index+1:]...)
+				updateItemsContainer()
+			})
+
+			itemContainer := container.NewVBox(
+				nameEntry,
+				container.NewGridWithColumns(2,
+					quantityEntry,
+					priceEntry,
+				),
+			)
+
+			if i > 0 {
+				itemContainer.Add(removeButton)
 			}
-		},
-	)
+
+			itemsContainer.Add(itemContainer)
+		}
+		itemsContainer.Refresh()
+	}
+
+	updateItemsContainer()
 
 	addItemButton := widget.NewButton("Add Item", func() {
 		items = append(items, Item{Name: "", Quantity: 1, Price: 0.0})
-		itemList.Refresh()
+		updateItemsContainer()
 	})
 
 	var outputDir string
@@ -308,7 +317,7 @@ func main() {
 			{Text: "ID", Widget: idEntry},
 			{Text: "To", Widget: toEntry},
 			{Text: "Address", Widget: toAddressEntry},
-			{Text: "Items", Widget: container.NewVBox(itemList, addItemButton)},
+			{Text: "Items", Widget: container.NewVBox(itemsContainer, addItemButton)},
 			{Text: "Output Directory", Widget: outputDirButton},
 		},
 	}
@@ -340,14 +349,16 @@ func main() {
 		inv.Id = idEntry.Text
 		inv.To = toEntry.Text
 		inv.ToAddress = toAddressEntry.Text
-		inv.Items = make([]string, len(items))
-		inv.Quantities = make([]int, len(items))
-		inv.Rates = make([]float64, len(items))
+		inv.Items = make([]string, 0, len(items))
+		inv.Quantities = make([]int, 0, len(items))
+		inv.Rates = make([]float64, 0, len(items))
 
-		for i, item := range items {
-			inv.Items[i] = item.Name
-			inv.Quantities[i] = item.Quantity
-			inv.Rates[i] = item.Price
+		for _, item := range items {
+			if item.Name != "" {
+				inv.Items = append(inv.Items, item.Name)
+				inv.Quantities = append(inv.Quantities, item.Quantity)
+				inv.Rates = append(inv.Rates, item.Price)
+			}
 		}
 
 		baseFilename := "invoice"
