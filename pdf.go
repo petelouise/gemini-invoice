@@ -51,7 +51,7 @@ func WriteLogo(pdf *gopdf.GoPdf, logo string, from string) {
 		} else {
 			scaledWidth := 100.0
 			scaledHeight := float64(height) * scaledWidth / float64(width)
-			pageWidth, _ := pdf.GetPageSize()
+			pageWidth := gopdf.PageSizeA4.W
 			logoX := pageWidth - scaledWidth - 40 // 40 is right margin
 			err = pdf.Image(logo, logoX, startY, &gopdf.Rect{W: scaledWidth, H: scaledHeight})
 			if err != nil {
