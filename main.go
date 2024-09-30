@@ -39,6 +39,7 @@ type Invoice struct {
 	Logo                string    `json:"logo" yaml:"logo"`
 	From                string    `json:"from" yaml:"from"`
 	To                  string    `json:"to" yaml:"to"`
+	ToAddress           string    `json:"to_address" yaml:"to_address"`
 	Date                string    `json:"date" yaml:"date"`
 	Due                 string    `json:"due" yaml:"due"`
 	Items               []string  `json:"items" yaml:"items"`
@@ -144,7 +145,7 @@ func GenerateInvoice(invoice Invoice, output string) error {
 
 	WriteLogo(&pdf, invoice.Logo, invoice.From)
 	WriteTitle(&pdf, invoice.Title, invoice.Id, invoice.Date)
-	WriteBillTo(&pdf, invoice.To)
+	WriteBillTo(&pdf, invoice.To, invoice.ToAddress)
 	WriteHeaderRow(&pdf)
 	subtotal := 0.0
 
@@ -201,6 +202,8 @@ func main() {
 	idEntry.SetText(inv.Id)
 	toEntry := widget.NewEntry()
 	toEntry.SetPlaceHolder("Customer Name")
+	toAddressEntry := widget.NewMultiLineEntry()
+	toAddressEntry.SetPlaceHolder("Customer Address")
 	itemNameEntry := widget.NewEntry()
 	itemNameEntry.SetPlaceHolder("Item Name")
 	itemPriceEntry := widget.NewEntry()
@@ -217,6 +220,7 @@ func main() {
 		Items: []*widget.FormItem{
 			{Text: "ID", Widget: idEntry},
 			{Text: "To", Widget: toEntry},
+			{Text: "Address", Widget: toAddressEntry},
 			{Text: "Item Name", Widget: itemNameEntry},
 			{Text: "Item Price", Widget: itemPriceEntry},
 			{Text: "Output Directory", Widget: outputDirButton},
@@ -248,6 +252,7 @@ func main() {
 
 		inv.Id = idEntry.Text
 		inv.To = toEntry.Text
+		inv.ToAddress = toAddressEntry.Text
 		inv.Items = []string{itemNameEntry.Text}
 		price, err := strconv.ParseFloat(itemPriceEntry.Text, 64)
 		if err != nil {

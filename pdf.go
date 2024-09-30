@@ -89,26 +89,24 @@ func WriteDueDate(pdf *gopdf.GoPdf, due string) {
 	pdf.Br(12)
 }
 
-func WriteBillTo(pdf *gopdf.GoPdf, to string) {
+func WriteBillTo(pdf *gopdf.GoPdf, to string, toAddress string) {
 	pdf.SetTextColor(75, 75, 75)
 	_ = pdf.SetFont("Inter", "", 9)
 	_ = pdf.Cell(nil, "BILL TO")
 	pdf.Br(18)
 	pdf.SetTextColor(75, 75, 75)
 
-	formattedTo := strings.ReplaceAll(to, `\n`, "\n")
-	toLines := strings.Split(formattedTo, "\n")
+	_ = pdf.SetFont("Inter", "", 15)
+	_ = pdf.Cell(nil, to)
+	pdf.Br(20)
 
-	for i := 0; i < len(toLines); i++ {
-		if i == 0 {
-			_ = pdf.SetFont("Inter", "", 15)
-			_ = pdf.Cell(nil, toLines[i])
-			pdf.Br(20)
-		} else {
-			_ = pdf.SetFont("Inter", "", 10)
-			_ = pdf.Cell(nil, toLines[i])
-			pdf.Br(15)
-		}
+	_ = pdf.SetFont("Inter", "", 10)
+	formattedAddress := strings.ReplaceAll(toAddress, `\n`, "\n")
+	addressLines := strings.Split(formattedAddress, "\n")
+
+	for _, line := range addressLines {
+		_ = pdf.Cell(nil, line)
+		pdf.Br(15)
 	}
 	pdf.Br(64)
 }
