@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "embed"
+	"flag"
 	"fmt"
 	"image/color"
 	"io/ioutil"
@@ -184,7 +185,44 @@ func GenerateInvoice(invoice Invoice, output string) error {
 	return nil
 }
 
+func createSampleInvoice() Invoice {
+	return Invoice{
+		Id:                  "SAMPLE-001",
+		Title:               "Sample Invoice",
+		Logo:                "",
+		From:                "Your Company\n123 Your Street\nYour City, State 12345",
+		To:                  "Sample Customer",
+		ToAddress:           "456 Customer Street\nCustomer City, State 67890",
+		Date:                time.Now().Format("Jan 02, 2006"),
+		Due:                 time.Now().AddDate(0, 0, 30).Format("Jan 02, 2006"),
+		Items:               []string{"Item 1", "Item 2", "Item 3"},
+		Quantities:          []int{2, 1, 3},
+		Rates:               []float64{100.00, 200.00, 50.00},
+		Tax:                 0.08,
+		Discount:            0.05,
+		Currency:            "USD",
+		Note:                "Thank you for your business!",
+		AccountNumber:       "1234567890",
+		RoutingNumber:       "987654321",
+		PaymentInstructions: "Please make payment within 30 days.",
+	}
+}
+
 func main() {
+	testFlag := flag.Bool("test", false, "Run a quick test of PDF generation")
+	flag.Parse()
+
+	if *testFlag {
+		sampleInvoice := createSampleInvoice()
+		err := GenerateInvoice(sampleInvoice, "sample_invoice.pdf")
+		if err != nil {
+			fmt.Printf("Error generating sample invoice: %v\n", err)
+		} else {
+			fmt.Println("Sample invoice generated: sample_invoice.pdf")
+		}
+		return
+	}
+
 	config, err := LoadConfig("config.yaml")
 	if err != nil {
 		fmt.Printf("Error loading config: %v\n", err)
