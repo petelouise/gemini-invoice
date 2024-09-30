@@ -16,7 +16,6 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/signintech/gopdf"
@@ -250,7 +249,8 @@ func main() {
 	toAddressEntry.SetPlaceHolder("Customer Address")
 
 	var items []Item
-	itemList := widget.NewList(
+	var itemList *widget.List
+	itemList = widget.NewList(
 		func() int {
 			return len(items)
 		},
