@@ -23,6 +23,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type Item struct {
+	Name     string
+	Quantity int
+	Price    float64
+}
+
 var currencySymbols = map[string]string{
 	"USD": "$",
 	// Add other currency symbols as needed
@@ -242,10 +248,53 @@ func main() {
 	toEntry.SetPlaceHolder("Customer Name")
 	toAddressEntry := widget.NewMultiLineEntry()
 	toAddressEntry.SetPlaceHolder("Customer Address")
-	itemNameEntry := widget.NewEntry()
-	itemNameEntry.SetPlaceHolder("Item Name")
-	itemPriceEntry := widget.NewEntry()
-	itemPriceEntry.SetPlaceHolder("Item Price")
+
+	var items []Item
+	itemList := widget.NewList(
+		func() int {
+			return len(items)
+		},
+		func() fyne.CanvasObject {
+			return container.NewHBox(
+				widget.NewEntry(),
+				widget.NewEntry(),
+				widget.NewEntry(),
+				widget.NewButton("Remove", nil),
+			)
+		},
+		func(id widget.ListItemID, obj fyne.CanvasObject) {
+			item := items[id]
+			nameEntry := obj.(*fyne.Container).Objects[0].(*widget.Entry)
+			quantityEntry := obj.(*fyne.Container).Objects[1].(*widget.Entry)
+			priceEntry := obj.(*fyne.Container).Objects[2].(*widget.Entry)
+			removeButton := obj.(*fyne.Container).Objects[3].(*widget.Button)
+
+			nameEntry.SetText(item.Name)
+			quantityEntry.SetText(strconv.Itoa(item.Quantity))
+			priceEntry.SetText(fmt.Sprintf("%.2f", item.Price))
+
+			nameEntry.OnChanged = func(value string) {
+				items[id].Name = value
+			}
+			quantityEntry.OnChanged = func(value string) {
+				quantity, _ := strconv.Atoi(value)
+				items[id].Quantity = quantity
+			}
+			priceEntry.OnChanged = func(value string) {
+				price, _ := strconv.ParseFloat(value, 64)
+				items[id].Price = price
+			}
+			removeButton.OnTapped = func() {
+				items = append(items[:id], items[id+1:]...)
+				itemList.Refresh()
+			}
+		},
+	)
+
+	addItemButton := widget.NewButton("Add Item", func() {
+		items = append(items, Item{Name: "", Quantity: 1, Price: 0.0})
+		itemList.Refresh()
+	})
 
 	var outputDir string
 	outputDirButton := widget.NewButton("Select Output Directory", nil)
@@ -259,8 +308,7 @@ func main() {
 			{Text: "ID", Widget: idEntry},
 			{Text: "To", Widget: toEntry},
 			{Text: "Address", Widget: toAddressEntry},
-			{Text: "Item Name", Widget: itemNameEntry},
-			{Text: "Item Price", Widget: itemPriceEntry},
+			{Text: "Items", Widget: container.NewVBox(itemList, addItemButton)},
 			{Text: "Output Directory", Widget: outputDirButton},
 		},
 	}
@@ -292,14 +340,15 @@ func main() {
 		inv.Id = idEntry.Text
 		inv.To = toEntry.Text
 		inv.ToAddress = toAddressEntry.Text
-		inv.Items = []string{itemNameEntry.Text}
-		price, err := strconv.ParseFloat(itemPriceEntry.Text, 64)
-		if err != nil {
-			dialog.ShowError(fmt.Errorf("error parsing price: %v", err), myWindow)
-			return
+		inv.Items = make([]string, len(items))
+		inv.Quantities = make([]int, len(items))
+		inv.Rates = make([]float64, len(items))
+
+		for i, item := range items {
+			inv.Items[i] = item.Name
+			inv.Quantities[i] = item.Quantity
+			inv.Rates[i] = item.Price
 		}
-		inv.Rates = []float64{price}
-		inv.Quantities = []int{1}
 
 		baseFilename := "invoice"
 		extension := ".pdf"
@@ -317,7 +366,7 @@ func main() {
 			counter++
 		}
 
-		err = GenerateInvoice(inv, output)
+		err := GenerateInvoice(inv, output)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("error generating invoice: %v", err), myWindow)
 		} else {
@@ -327,14 +376,12 @@ func main() {
 
 	content := container.NewVBox(
 		title,
-		layout.NewSpacer(),
 		form,
-		layout.NewSpacer(),
 		generateButton,
 	)
 
 	myWindow.SetContent(content)
-	myWindow.Resize(fyne.NewSize(400, 500))
+	myWindow.Resize(fyne.NewSize(600, 700))
 	myWindow.ShowAndRun()
 }
 
