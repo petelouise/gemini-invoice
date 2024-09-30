@@ -16,7 +16,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
-	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/signintech/gopdf"
@@ -232,7 +231,6 @@ func main() {
 	generateButton.Importance = widget.HighImportance
 
 	outputDirButton.OnTapped = func() {
-		lastDir := myApp.Preferences().StringWithFallback("lastOutputDir", "")
 		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
 			if err != nil {
 				fmt.Println("Error selecting directory:", err)
