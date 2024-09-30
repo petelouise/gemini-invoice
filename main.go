@@ -271,10 +271,15 @@ func main() {
 			}
 
 			priceEntry := widget.NewEntry()
-			priceEntry.SetText(fmt.Sprintf("%.2f", items[i].Price))
+			priceEntry.SetText(fmt.Sprintf("$%.2f", items[i].Price))
 			priceEntry.OnChanged = func(value string) {
+				// Remove the dollar sign and any commas
+				value = strings.TrimPrefix(value, "$")
+				value = strings.ReplaceAll(value, ",", "")
 				price, _ := strconv.ParseFloat(value, 64)
 				items[index].Price = price
+				// Update the display with proper formatting
+				priceEntry.SetText(fmt.Sprintf("$%.2f", price))
 			}
 
 			removeButton := widget.NewButton("Remove", func() {
@@ -358,6 +363,9 @@ func main() {
 				inv.Rates = append(inv.Rates, item.Price)
 			}
 		}
+
+		// Ensure the currency is set
+		inv.Currency = "USD"
 
 		baseFilename := "invoice"
 		extension := ".pdf"
